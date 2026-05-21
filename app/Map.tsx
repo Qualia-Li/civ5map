@@ -58,6 +58,7 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
   const [center, setCenter] = useState<[number, number]>([10, 20]);
   const [zoom, setZoom] = useState(1);
   const [rotate, setRotate] = useState<[number, number, number]>([-10, -20, 0]);
+  const [globeScale, setGlobeScale] = useState(220);
   const dragRef = useRef<{ x: number; y: number; r0: [number, number, number] } | null>(null);
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
   }, [selected, proj]);
 
   const projectionConfig: any =
-    proj === "geoOrthographic" ? { rotate, scale: 220 } :
+    proj === "geoOrthographic" ? { rotate, scale: globeScale } :
     proj === "geoMercator"     ? { scale: 130 } :
     { scale: 160 };
 
@@ -102,7 +103,7 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
         <span>Projection:</span>
         {PROJECTIONS.map((p) => (
           <button key={p.value}
-            onClick={() => { setProj(p.value); setZoom(1); setCenter([10, 20]); }}
+            onClick={() => { setProj(p.value); setZoom(1); setCenter([10, 20]); setGlobeScale(220); }}
             style={{
               padding: "3px 8px", borderRadius: 999, cursor: "pointer",
               background: proj === p.value ? "#d4a85a" : "transparent",
@@ -119,7 +120,11 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
         projectionConfig={projectionConfig}
         width={1200}
         height={700}
-        style={{ width: "100%", height: "100%", background: "#0a1118" }}
+        // Fill the wrap entirely instead of letterboxing. Map content stays
+        // legible because most projections look fine with a stretched aspect.
+        preserveAspectRatio="xMidYMid slice"
+        style={{ width: "100%", height: "100%", background: "#0a1118",
+          display: "block" }}
         onMouseDown={(e: React.MouseEvent) => {
           if (proj !== "geoOrthographic") return;
           dragRef.current = { x: e.clientX, y: e.clientY, r0: rotate };
@@ -132,13 +137,21 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
         }}
         onMouseUp={() => { dragRef.current = null; }}
         onMouseLeave={() => { dragRef.current = null; }}
+        onWheel={(e: React.WheelEvent) => {
+          if (proj !== "geoOrthographic") return;
+          // Scroll = zoom the globe (no preventDefault — passive listeners on
+          // wheel events can't preventDefault inside React anyway). Scale
+          // controls the globe's apparent radius in projection units.
+          const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+          setGlobeScale((s) => Math.min(2400, Math.max(140, s * factor)));
+        }}
       >
-        {/* Globe view: keep the sphere outline so it reads as a planet.
-            Flat projections: skip it (no random rectangle in the ocean). */}
+        {/* Globe view: ocean-fill sphere (so the planet reads as solid, not transparent)
+            + graticule. Flat projections: skip — would draw a random rectangle. */}
         {proj === "geoOrthographic" && (
           <>
-            <Sphere id="sphere" stroke="#324155" strokeWidth={0.5} fill="#0e1620" />
-            <Graticule stroke="#1e2a3a" strokeWidth={0.4} />
+            <Sphere id="sphere" stroke="#3a5570" strokeWidth={0.8} fill="#0e2742" />
+            <Graticule stroke="#1e3a52" strokeWidth={0.4} />
           </>
         )}
 
@@ -165,10 +178,10 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
 
       {proj === "geoOrthographic" && (
         <div style={{
-          position: "absolute", bottom: 60, left: 14, fontSize: 11,
+          position: "absolute", top: 56, left: 14, fontSize: 11, zIndex: 5,
           color: "#9aa9bc", background: "rgba(15,20,25,0.85)",
           padding: "4px 10px", borderRadius: 6, border: "1px solid #324155",
-        }}>Drag the globe to rotate</div>
+        }}>Drag to rotate · scroll to zoom</div>
       )}
     </div>
   );
