@@ -109,7 +109,7 @@ export const PEOPLE_MUSICIAN: Person[] = [
     died: 1991,
     birth: { name: 'Alton', coords: [38.8906, -90.1843] },
     work: { name: 'New York City', coords: [40.7128, -74.006] },
-    death: { name: 'Santa Monica', coords: [34.0195, -118.4912] },
+    death: { name: 'Los Angeles', coords: [34.0522, -118.2437] },
     works: ['Kind of Blue', 'Birth of the Cool', 'Sketches of Spain', 'Bitches Brew'],
     blurb: 'Restless jazz innovator whose career helped shape bebop, cool jazz, modal jazz, and fusion.',
   },

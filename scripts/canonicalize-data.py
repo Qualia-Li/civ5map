@@ -68,6 +68,37 @@ ALIASES = {
     "lambeth":"London","greenwich":"London",
     "neuilly-sur-seine":"Paris","saint-denis":"Paris","passy":"Paris",
     "montmartre":"Paris","arcueil":"Paris",
+    # LA / SF / Tokyo
+    "san gabriel":"Los Angeles","santa monica":"Los Angeles",
+    "beverly hills":"Los Angeles","pasadena":"Los Angeles",
+    "hollywood":"Los Angeles","west hollywood":"Los Angeles",
+    "burbank":"Los Angeles","glendale":"Los Angeles",
+    "culver city":"Los Angeles","inglewood":"Los Angeles",
+    "compton":"Los Angeles","brentwood":"Los Angeles",
+    "malibu":"Los Angeles","pacific palisades":"Los Angeles",
+    "yerba buena island":"San Francisco","yerba buena":"San Francisco",
+    "treasure island":"San Francisco","presidio":"San Francisco",
+    "asakusa":"Tokyo","katsushika":"Tokyo","ikegami":"Tokyo",
+    "edo bay":"Tokyo","shinjuku":"Tokyo","shibuya":"Tokyo",
+    "ginza":"Tokyo","ueno":"Tokyo",
+    # London boroughs
+    "deptford":"London","east india house":"London","the strand":"London",
+    "kennington":"London","leyton":"London","hampton court":"London",
+    "wapping":"London","shoreditch":"London","islington":"London",
+    "marylebone":"London","soho":"London","bloomsbury":"London",
+    # Paris suburbs
+    "marnes-la-coquette":"Paris","boulogne-billancourt":"Paris",
+    "vincennes":"Paris","montparnasse":"Paris","le marais":"Paris",
+    "belleville":"Paris","saint-germain":"Paris",
+    # Chicago / Moscow / Berlin / Vienna
+    "oak park":"Chicago","oak park, illinois":"Chicago",
+    "evanston":"Chicago","cicero":"Chicago",
+    "kolomenskoye":"Moscow","moscow kremlin":"Moscow",
+    "the kremlin":"Moscow","ostankino":"Moscow",
+    "charlottenburg":"Berlin","kreuzberg":"Berlin","mitte":"Berlin",
+    "potsdamer platz":"Berlin","schöneberg":"Berlin",
+    "döbling":"Vienna","leopoldstadt":"Vienna","hietzing":"Vienna",
+    "favoriten":"Vienna",
 }
 
 PAREN_RX = re.compile(r"\s*\([^)]*\)\s*$")
@@ -109,6 +140,13 @@ CITY_CENTROIDS = {
     "Volgograd":       [48.7080,  44.5133],
     "Yekaterinburg":   [56.8389,  60.6057],
     "Krasnodar":       [45.0355,  38.9753],
+    "Los Angeles":     [34.0522, -118.2437],
+    "San Francisco":   [37.7749, -122.4194],
+    "Chicago":         [41.8781,  -87.6298],
+    "Moscow":          [55.7558,   37.6173],
+    "Berlin":          [52.5200,   13.4050],
+    "Vienna":          [48.2082,   16.3738],
+    "Amsterdam":       [52.3676,    4.9041],
 }
 
 
@@ -125,8 +163,10 @@ def canonical_city(raw: str) -> str:
 # Match the whole `birth/work/death: { name: '...', coords: [..,..] }` block
 # so we can rewrite both `name` and `coords` together.
 PLACE_BLOCK_RX = re.compile(
-    r"(birth|work|death)\s*:\s*\{\s*name\s*:\s*(['\"])(.+?)\2\s*,\s*coords\s*:\s*\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\]\s*\}",
-    re.DOTALL,
+    r"""(birth|work|death)\s*:\s*\{\s*
+        name\s*:\s*(['"])(.+?)\2\s*,\s*
+        coords\s*:\s*\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\]\s*\}""",
+    re.DOTALL | re.VERBOSE,
 )
 
 

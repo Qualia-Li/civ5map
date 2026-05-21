@@ -317,14 +317,18 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
                 s === "work"  ? entry.place.name :
                                 `died ${entry.place.name}`
               ).join(" · ")}`;
+              // Marker geometry: visible radius + larger invisible hit area
+              // for easier clicking. (Markers stay screen-sized via 1/zoom.)
+              const HIT = 11 * k; // pointer target radius
               if (primary === "work") {
                 return (
                   <Marker key={`${p.name}-${coordKey(entry.coords)}`}
                     coordinates={toLngLat(entry.coords)}
                     onClick={(ev: any) => handleClick(entry.place, p, ev)}>
-                    <circle r={(isSel ? 5.5 : 3.5) * k} fill={color} fillOpacity={0.9}
-                      stroke={isSel ? "#fff" : "none"} strokeWidth={(isSel ? 1 : 0) * k}
-                      style={{ cursor: "pointer" }} />
+                    <circle r={HIT} fill="transparent" style={{ cursor: "pointer" }} />
+                    <circle r={(isSel ? 8 : 5.5) * k} fill={color} fillOpacity={0.9}
+                      stroke={isSel ? "#fff" : "none"} strokeWidth={(isSel ? 1.4 : 0) * k}
+                      style={{ pointerEvents: "none" }} />
                     <title>{tip}</title>
                   </Marker>
                 );
@@ -334,8 +338,9 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
                   <Marker key={`${p.name}-${coordKey(entry.coords)}`}
                     coordinates={toLngLat(entry.coords)}
                     onClick={(ev: any) => handleClick(entry.place, p, ev)}>
-                    <circle r={(isSel ? 5 : 3.2) * k} fill="none" stroke={color}
-                      strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
+                    <circle r={HIT} fill="transparent" style={{ cursor: "pointer" }} />
+                    <circle r={(isSel ? 7.5 : 5) * k} fill="none" stroke={color}
+                      strokeWidth={(isSel ? 2.6 : 2) * k} style={{ pointerEvents: "none" }} />
                     <title>{tip}</title>
                   </Marker>
                 );
@@ -344,8 +349,9 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
                 <Marker key={`${p.name}-${coordKey(entry.coords)}`}
                   coordinates={toLngLat(entry.coords)}
                   onClick={(ev: any) => handleClick(entry.place, p, ev)}>
-                  <circle r={(isSel ? 4.5 : 2.8) * k} fill="#0a1118" stroke={color}
-                    strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
+                  <circle r={HIT} fill="transparent" style={{ cursor: "pointer" }} />
+                  <circle r={(isSel ? 6.5 : 4.5) * k} fill="#0a1118" stroke={color}
+                    strokeWidth={(isSel ? 2.6 : 2) * k} style={{ pointerEvents: "none" }} />
                   <title>{tip}</title>
                 </Marker>
               );

@@ -10,7 +10,7 @@ export const PEOPLE_ADMIRAL: Person[] = [
     born: 1794,
     died: 1858,
     birth: { name: 'Newport', coords: [41.4901, -71.3128] },
-    work: { name: 'Edo Bay', coords: [35.4500, 139.8000] },
+    work: { name: 'Tokyo', coords: [35.6762, 139.6503] },
     death: { name: 'New York City', coords: [40.7128, -74.006] },
     works: ['Battle of Lake Erie', 'Opening of Japan', 'Convention of Kanagawa'],
     blurb: 'U.S. commodore whose Black Ships expedition forced the opening of Tokugawa Japan.'
@@ -53,7 +53,7 @@ export const PEOPLE_ADMIRAL: Person[] = [
     died: 1966,
     birth: { name: 'Fredericksburg', coords: [30.2752, -98.8719] },
     work: { name: 'Pearl Harbor', coords: [21.3609, -157.9501] },
-    death: { name: 'Yerba Buena Island', coords: [37.8109, -122.3668] },
+    death: { name: 'San Francisco', coords: [37.7749, -122.4194] },
     works: ['Battle of Midway', 'Guadalcanal campaign', 'Battle of Leyte Gulf', 'Pacific island-hopping campaign'],
     blurb: 'Commander in Chief of the U.S. Pacific Fleet and chief architect of the Allied naval war in the Pacific.'
   },

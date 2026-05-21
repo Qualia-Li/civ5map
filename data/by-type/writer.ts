@@ -261,7 +261,7 @@ export const PEOPLE_WRITER: Person[] = [
     era: 'Modern',
     born: 1899,
     died: 1961,
-    birth: { name: 'Oak Park', coords: [41.8850, -87.7845] },
+    birth: { name: 'Chicago', coords: [41.8781, -87.6298] },
     work: { name: 'Havana', coords: [23.1136, -82.3666] },
     death: { name: 'Ketchum', coords: [43.6807, -114.3637] },
     works: ['The Sun Also Rises', 'A Farewell to Arms', 'For Whom the Bell Tolls', 'The Old Man and the Sea'],

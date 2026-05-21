@@ -220,7 +220,7 @@ export const PEOPLE_ARTIST: Person[] = [
     born: 1867,
     died: 1959,
     birth: { name: 'Richland Center', coords: [43.3347, -90.3868] },
-    work: { name: 'Oak Park', coords: [41.8850, -87.7845] },
+    work: { name: 'Chicago', coords: [41.8781, -87.6298] },
     death: { name: 'Phoenix', coords: [33.4484, -112.0740] },
     works: ['Fallingwater', 'Guggenheim Museum', 'Robie House', 'Taliesin West'],
     blurb: 'American architect of the prairie and the cantilever, Wright fused buildings with landscape and daily life.'
@@ -289,9 +289,9 @@ export const PEOPLE_ARTIST: Person[] = [
     era: 'Industrial',
     born: 1760,
     died: 1849,
-    birth: { name: 'Katsushika', coords: [35.7433, 139.8470] },
+    birth: { name: 'Tokyo', coords: [35.6762, 139.6503] },
     work: { name: 'Tokyo', coords: [35.6762, 139.6503] },
-    death: { name: 'Asakusa', coords: [35.7148, 139.7967] },
+    death: { name: 'Tokyo', coords: [35.6762, 139.6503] },
     works: ['The Great Wave off Kanagawa', 'Fine Wind, Clear Morning', 'Ejiri in Suruga Province', 'The Ghost of Oiwa'],
     blurb: 'Ukiyo-e master whose prints distilled movement and landscape into some of the most famous images in world art.'
   }

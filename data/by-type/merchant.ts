@@ -262,7 +262,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     era: 'Renaissance',
     born: 1581,
     died: 1644,
-    birth: { name: 'Leyton', coords: [51.5686, -0.0158] },
+    birth: { name: 'London', coords: [51.5074, -0.1278] },
     work: { name: 'Agra', coords: [27.1767, 78.0081] },
     death: { name: 'Bath', coords: [51.3811, -2.3590] },
     works: ['Embassy to Jahangir', 'East India Company trade privileges', 'Ottoman and Levant diplomacy'],
@@ -305,7 +305,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     born: 1728,
     died: 1779,
     birth: { name: 'Marton', coords: [54.5448, -1.2014] },
-    work: { name: 'Deptford', coords: [51.4794, -0.0262] },
+    work: { name: 'London', coords: [51.5074, -0.1278] },
     death: { name: 'Kealakekua Bay', coords: [19.4804, -155.9225] },
     works: ['First Pacific voyage aboard Endeavour', 'Mapping of New Zealand', 'Mapping of Australia’s east coast', 'Third Pacific voyage'],
     blurb: 'Surveyor-captain whose expeditions opened vast Pacific spaces to imperial and commercial navigation.'
@@ -347,7 +347,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     born: 1806,
     died: 1873,
     birth: { name: 'London', coords: [51.5074, -0.1278] },
-    work: { name: 'East India House', coords: [51.5136, -0.0880] },
+    work: { name: 'London', coords: [51.5074, -0.1278] },
     death: { name: 'Avignon', coords: [43.9493, 4.8055] },
     works: ['Principles of Political Economy', 'Career at the East India Company', 'On Liberty', 'Utilitarianism'],
     blurb: 'Economist and public thinker who connected liberal politics with the institutions of empire and commerce.'
@@ -501,7 +501,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     born: 1675,
     died: 1741,
     birth: { name: 'Painswick', coords: [51.7854, -2.1958] },
-    work: { name: 'The Strand', coords: [51.5134, -0.1270] },
+    work: { name: 'London', coords: [51.5074, -0.1278] },
     death: { name: 'London', coords: [51.5074, -0.1278] },
     works: ['Tom’s Coffee House', 'Twinings tea business', 'East India Company tea retailing'],
     blurb: 'London tea merchant who helped make tea a staple of British consumer culture.'

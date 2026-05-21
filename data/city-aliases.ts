@@ -203,7 +203,10 @@ export const CITY_ALIASES: Record<string, string> = {
   "murray hill":          "New York City",
   "philadelphia":         "Philadelphia",
 
-  // ---- Greater London ----
+  // ---- Greater London (boroughs inside Greater London proper only) ----
+  // Cambridge, Bletchley, Hastings, Down House, Crowborough, Chelmsford,
+  // Firle, Medway etc. are NOT part of London — they're distinct towns and
+  // stay separate.
   "westminster":          "London",
   "kensington":           "London",
   "highgate":             "London",
@@ -212,14 +215,96 @@ export const CITY_ALIASES: Record<string, string> = {
   "southwark":            "London",
   "lambeth":              "London",
   "greenwich":            "London",
+  "deptford":             "London",   // LB of Lewisham
+  "east india house":     "London",   // City of London
+  "the strand":           "London",   // street in central London
+  "kennington":           "London",   // LB of Lambeth
+  "leyton":               "London",   // LB of Waltham Forest
+  "hampton court":        "London",   // LB of Richmond
+  "wapping":              "London",
+  "shoreditch":           "London",
+  "islington":            "London",
+  "marylebone":           "London",
+  "soho":                 "London",
+  "bloomsbury":           "London",
 
   // ---- Greater Paris ----
+  // Auvers-sur-Oise (Van Gogh's death), Versailles, Noyon, Quierzy stay separate —
+  // they're distinct historical/political sites, not Paris-of-the-metro.
   "versailles":           "Versailles", // keep separate — distinct historical site
   "neuilly-sur-seine":    "Paris",
   "saint-denis":          "Paris",
   "passy":                "Paris",
   "montmartre":           "Paris",
   "arcueil":              "Paris",
+  "marnes-la-coquette":   "Paris",  // Pasteur's death, 11km from Paris center
+  "boulogne-billancourt": "Paris",
+  "vincennes":            "Paris",
+  "montparnasse":         "Paris",
+  "le marais":            "Paris",
+  "belleville":           "Paris",
+  "saint-germain":        "Paris",
+
+  // ---- Greater Los Angeles ----
+  "san gabriel":          "Los Angeles",
+  "santa monica":         "Los Angeles",
+  "beverly hills":        "Los Angeles",
+  "pasadena":             "Los Angeles",
+  "hollywood":            "Los Angeles",
+  "west hollywood":       "Los Angeles",
+  "burbank":              "Los Angeles",
+  "glendale":             "Los Angeles",
+  "culver city":          "Los Angeles",
+  "inglewood":            "Los Angeles",
+  "compton":              "Los Angeles",
+  "brentwood":            "Los Angeles",
+  "malibu":               "Los Angeles",
+  "pacific palisades":    "Los Angeles",
+
+  // ---- San Francisco proper ----
+  // Only places literally inside SF's city limits — Oakland / Berkeley /
+  // Palo Alto / Cupertino are distinct cities and stay separate.
+  "yerba buena island":   "San Francisco",
+  "yerba buena":          "San Francisco",
+  "treasure island":      "San Francisco",
+  "presidio":             "San Francisco",
+
+  // ---- Greater Tokyo (wards inside Tokyo prefecture) ----
+  // Kominato (Chiba, ~70km), Yokohama (Kanagawa) stay separate.
+  "asakusa":              "Tokyo",
+  "katsushika":           "Tokyo",
+  "edo bay":              "Tokyo",
+  "shinjuku":             "Tokyo",
+  "shibuya":              "Tokyo",
+  "ginza":                "Tokyo",
+  "ueno":                 "Tokyo",
+
+  // ---- Chicago metro (Oak Park = Wright/Hemingway, just outside city line) ----
+  "oak park":             "Chicago",   // Hemingway birthplace + Wright studio
+  "oak park, illinois":   "Chicago",
+  "evanston":             "Chicago",
+  "cicero":               "Chicago",
+
+  // ---- Moscow (former villages now within city) ----
+  "kolomenskoye":         "Moscow",    // former village, now Moscow district
+  "moscow kremlin":       "Moscow",
+  "the kremlin":          "Moscow",
+  "ostankino":            "Moscow",
+
+  // ---- Berlin / Vienna boroughs (kept conservative; only obvious in-city districts) ----
+  "charlottenburg":       "Berlin",
+  "kreuzberg":             "Berlin",
+  "mitte":                 "Berlin",
+  "potsdamer platz":      "Berlin",
+  "schöneberg":           "Berlin",
+  "döbling":              "Vienna",
+  "leopoldstadt":         "Vienna",
+  "hietzing":             "Vienna",
+  "favoriten":            "Vienna",
+
+  // ---- Amsterdam (Delft, Leiden, The Hague stay separate — they are distinct Dutch cities) ----
+  // No district aliases needed here; the dataset has Amsterdam districts only if they match
+  // the city name directly.
 };
 
 const stripParen = (s: string) => s.replace(/\s*\([^)]*\)\s*$/, "").trim();

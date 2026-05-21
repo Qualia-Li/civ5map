@@ -165,7 +165,7 @@ export const PEOPLE_PROPHET: Person[] = [
     died: 1282,
     birth: { name: 'Kominato', coords: [35.1588, 140.1894] },
     work: { name: 'Mount Minobu', coords: [35.3855, 138.4687] },
-    death: { name: 'Ikegami', coords: [35.5795, 139.7112] },
+    death: { name: 'Tokyo', coords: [35.6762, 139.6503] },
     works: ['Nam-myoho-renge-kyo', 'Rissho Ankoku Ron', 'Kaimoku-sho', 'Kanjin no Honzon-sho'],
     blurb: 'Japanese Buddhist reformer who centered practice on the Lotus Sutra.'
   },
