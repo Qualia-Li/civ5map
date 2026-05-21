@@ -141,6 +141,10 @@ export const CITY_ALIASES: Record<string, string> = {
   "padova":               "Padua",
   "florence":             "Florence",
   "firenze":              "Florence",
+  "arcetri":              "Florence",   // hillside quarter of southern Florence
+  "arcetri, florence":    "Florence",
+  "careggi":              "Florence",
+  "fiesole":              "Florence",   // hilltop town fully absorbed into Greater Florence
   "venice":               "Venice",
   "venezia":              "Venice",
   "rome":                 "Rome",

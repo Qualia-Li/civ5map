@@ -359,7 +359,7 @@ export const PEOPLE_ENGINEER: Person[] = [
     era: 'Industrial',
     born: 1847,
     died: 1931,
-    birth: { name: 'Milan', coords: [41.3098, -82.6055] },
+    birth: { name: 'Milan', coords: [45.4642, 9.19] },
     work: { name: 'Menlo Park', coords: [40.5432, -74.3621] },
     death: { name: 'West Orange', coords: [40.7987, -74.239] },
     works: ['Phonograph', 'Practical incandescent lamp', 'Electric power distribution system', 'Motion picture camera'],

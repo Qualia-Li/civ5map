@@ -44,6 +44,8 @@ ALIASES = {
     # Greece / Italy
     "syrakousai":"Syracuse","neapolis":"Naples","napoli":"Naples","milano":"Milan",
     "padova":"Padua","firenze":"Florence","venezia":"Venice","roma":"Rome",
+    "arcetri":"Florence","arcetri, florence":"Florence",
+    "careggi":"Florence","fiesole":"Florence",
     # Russia
     "leningrad":"Saint Petersburg","petrograd":"Saint Petersburg",
     "st petersburg":"Saint Petersburg","st. petersburg":"Saint Petersburg",
@@ -151,6 +153,11 @@ CITY_CENTROIDS = {
     "Berlin":          [52.5200,   13.4050],
     "Vienna":          [48.2082,   16.3738],
     "Amsterdam":       [52.3676,    4.9041],
+    "Florence":        [43.7696,   11.2558],
+    "Rome":            [41.9028,   12.4964],
+    "Milan":           [45.4642,    9.1900],
+    "Venice":          [45.4408,   12.3155],
+    "Naples":          [40.8518,   14.2681],
 }
 
 

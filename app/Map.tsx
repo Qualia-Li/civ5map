@@ -319,6 +319,15 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
       {people.map((p) => {
         const color = TYPE_COLORS[p.type];
         const isSel = selected?.name === p.name;
+        // If this person's place falls inside a multi-person halo, skip the
+        // per-person marker — the donut halo already communicates the count
+        // and types, and clicking it opens the same chooser. Selected
+        // person keeps its markers so the focus is obvious.
+        const haloHere = (place: { coords: [number, number] } | undefined) => {
+          if (!place) return false;
+          const b = buckets.get(coordKey(place.coords));
+          return !!b && b.people.length >= 2;
+        };
         // Merge per-person markers that share a coord — if someone was born
         // AND died at Carthage we draw one marker, not two stacked. Stage
         // priority: work > birth > death (a working/career marker is the
@@ -338,6 +347,10 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
         return (
           <React.Fragment key={`${p.type}:${p.name}`}>
             {[...perCoord.values()].map((entry) => {
+              // Skip if a halo already covers this coord (and this person
+              // isn't the currently-selected one — selected people always
+              // render so the user can see the focus).
+              if (!isSel && haloHere(entry)) return null;
               entry.stages.sort((a, b) => stageRank[a] - stageRank[b]);
               const primary = entry.stages[0];
               const tip = `${p.name} — ${entry.stages.map((s) =>

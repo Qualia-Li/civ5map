@@ -291,7 +291,7 @@ export const PEOPLE_SCIENTIST: Person[] = [
     died: 1642,
     birth: { name: "Pisa", coords: [43.7228, 10.4017] },
     work: { name: "Padua", coords: [45.4064, 11.8768] },
-    death: { name: "Arcetri", coords: [43.7541, 11.2455] },
+    death: { name: "Florence", coords: [43.7696, 11.2558] },
     works: ["Telescope improvements", "Sidereus Nuncius", "Kinematics", "Dialogue on the Two Chief World Systems"],
     blurb: "Galileo made observation and experiment central to the scientific revolution.",
   },
