@@ -291,33 +291,65 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
       {people.map((p) => {
         const color = TYPE_COLORS[p.type];
         const isSel = selected?.name === p.name;
+        // Merge per-person markers that share a coord — if someone was born
+        // AND died at Carthage we draw one marker, not two stacked. Stage
+        // priority: work > birth > death (a working/career marker is the
+        // most prominent, dark-center "died" marker is least). The tooltip
+        // for a merged marker lists every life stage that overlapped here.
+        type Stage = "birth" | "work" | "death";
+        const stageRank: Record<Stage, number> = { work: 0, birth: 1, death: 2 };
+        const perCoord = new globalThis.Map<string, { coords: [number,number]; place: { name: string; coords: [number,number] }; stages: Stage[] }>();
+        const push = (stage: Stage, place?: { name: string; coords: [number,number] }) => {
+          if (!place) return;
+          const key = coordKey(place.coords);
+          if (!perCoord.has(key)) perCoord.set(key, { coords: place.coords, place, stages: [] });
+          perCoord.get(key)!.stages.push(stage);
+        };
+        push("birth", p.birth); push("work", p.work); push("death", p.death);
+
         return (
           <React.Fragment key={`${p.type}:${p.name}`}>
-            {p.birth && (
-              <Marker coordinates={toLngLat(p.birth.coords)}
-                onClick={(ev: any) => handleClick(p.birth!, p, ev)}>
-                <circle r={(isSel ? 5 : 3.2) * k} fill="none" stroke={color}
-                  strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
-                <title>{p.name} — born {p.birth.name}</title>
-              </Marker>
-            )}
-            {p.work && (
-              <Marker coordinates={toLngLat(p.work.coords)}
-                onClick={(ev: any) => handleClick(p.work!, p, ev)}>
-                <circle r={(isSel ? 5.5 : 3.5) * k} fill={color} fillOpacity={0.9}
-                  stroke={isSel ? "#fff" : "none"} strokeWidth={(isSel ? 1 : 0) * k}
-                  style={{ cursor: "pointer" }} />
-                <title>{p.name} — {p.work.name}</title>
-              </Marker>
-            )}
-            {p.death && (
-              <Marker coordinates={toLngLat(p.death.coords)}
-                onClick={(ev: any) => handleClick(p.death!, p, ev)}>
-                <circle r={(isSel ? 4.5 : 2.8) * k} fill="#0a1118" stroke={color}
-                  strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
-                <title>{p.name} — died {p.death.name}</title>
-              </Marker>
-            )}
+            {[...perCoord.values()].map((entry) => {
+              entry.stages.sort((a, b) => stageRank[a] - stageRank[b]);
+              const primary = entry.stages[0];
+              const tip = `${p.name} — ${entry.stages.map((s) =>
+                s === "birth" ? `born ${entry.place.name}` :
+                s === "work"  ? entry.place.name :
+                                `died ${entry.place.name}`
+              ).join(" · ")}`;
+              if (primary === "work") {
+                return (
+                  <Marker key={`${p.name}-${coordKey(entry.coords)}`}
+                    coordinates={toLngLat(entry.coords)}
+                    onClick={(ev: any) => handleClick(entry.place, p, ev)}>
+                    <circle r={(isSel ? 5.5 : 3.5) * k} fill={color} fillOpacity={0.9}
+                      stroke={isSel ? "#fff" : "none"} strokeWidth={(isSel ? 1 : 0) * k}
+                      style={{ cursor: "pointer" }} />
+                    <title>{tip}</title>
+                  </Marker>
+                );
+              }
+              if (primary === "birth") {
+                return (
+                  <Marker key={`${p.name}-${coordKey(entry.coords)}`}
+                    coordinates={toLngLat(entry.coords)}
+                    onClick={(ev: any) => handleClick(entry.place, p, ev)}>
+                    <circle r={(isSel ? 5 : 3.2) * k} fill="none" stroke={color}
+                      strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
+                    <title>{tip}</title>
+                  </Marker>
+                );
+              }
+              return (
+                <Marker key={`${p.name}-${coordKey(entry.coords)}`}
+                  coordinates={toLngLat(entry.coords)}
+                  onClick={(ev: any) => handleClick(entry.place, p, ev)}>
+                  <circle r={(isSel ? 4.5 : 2.8) * k} fill="#0a1118" stroke={color}
+                    strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
+                  <title>{tip}</title>
+                </Marker>
+              );
+            })}
           </React.Fragment>
         );
       })}
