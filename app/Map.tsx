@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { MapContainer, TileLayer, CircleMarker, Polyline, Tooltip, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Person, GPType } from "../data/people-types";
@@ -54,7 +54,7 @@ export default function Map({ people, selected, onSelect }: Props) {
         const color = TYPE_COLORS[p.type];
         const isSel = selected?.name === p.name;
         return (
-          <>
+          <React.Fragment key={`${p.type}:${p.name}`}>
             {p.birth && (
               <CircleMarker
                 key={`${p.name}-birth`}
@@ -100,7 +100,7 @@ export default function Map({ people, selected, onSelect }: Props) {
               <Polyline positions={[p.birth.coords, p.death.coords]}
                 pathOptions={{ color, dashArray: "4 6", weight: 2, opacity: 0.7 }} />
             )}
-          </>
+          </React.Fragment>
         );
       })}
       <FocusOnSelection selected={selected} />
