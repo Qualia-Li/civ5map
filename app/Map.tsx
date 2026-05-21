@@ -263,6 +263,31 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
           stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5 * k} strokeDasharray={`${3 * k} ${4 * k}`} />
       )}
 
+      {/* Halo for spots that aggregate multiple people — the more there are,
+          the bigger the ring. The dominant Great-Person type colors the halo. */}
+      {[...buckets.values()].filter((b) => b.people.length >= 2).map((b) => {
+        const counts = new globalThis.Map<string, number>();
+        for (const p of b.people) counts.set(p.type, (counts.get(p.type) ?? 0) + 1);
+        const dom = [...counts.entries()].sort((a, c) => c[1] - a[1])[0][0];
+        const color = TYPE_COLORS[dom as GPType];
+        const r = (4 + 2.6 * Math.sqrt(b.people.length)) * k;
+        return (
+          <Marker key={`halo:${coordKey(b.coords)}`} coordinates={toLngLat(b.coords)}
+            onClick={(ev: any) => {
+              if (onClusterClick) onClusterClick(b.people, { x: ev.clientX, y: ev.clientY }, b.placeLabel);
+            }}>
+            <circle r={r} fill={color} fillOpacity={0.08}
+              stroke={color} strokeOpacity={0.55} strokeWidth={1.2 * k}
+              style={{ cursor: "pointer", pointerEvents: "all" }} />
+            <text y={-r - 4 * k} textAnchor="middle"
+              style={{ pointerEvents: "none", fill: color, fontSize: 10 * k, fontWeight: 600,
+                       paintOrder: "stroke", stroke: "#0a1118", strokeWidth: 2 * k }}>
+              {b.people.length}
+            </text>
+          </Marker>
+        );
+      })}
+
       {people.map((p) => {
         const color = TYPE_COLORS[p.type];
         const isSel = selected?.name === p.name;
