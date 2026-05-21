@@ -304,7 +304,7 @@ export default function Page() {
             {selected.birth ? (
               <div className="place-row">
                 <span className="dot" style={{ background: TYPE_COLORS[selected.type], border: "2px solid #fff" }} />
-                <span>{selected.birth.name}</span>
+                <span>{canonicalCity(selected.birth.name)}</span>
               </div>
             ) : <div className="place-row" style={{ color: "var(--muted)" }}>—</div>}
 
@@ -312,7 +312,7 @@ export default function Page() {
             {selected.work ? (
               <div className="place-row">
                 <span className="dot" style={{ background: TYPE_COLORS[selected.type] }} />
-                <span>{selected.work.name}</span>
+                <span>{canonicalCity(selected.work.name)}</span>
               </div>
             ) : <div className="place-row" style={{ color: "var(--muted)" }}>—</div>}
 
@@ -320,7 +320,7 @@ export default function Page() {
             {selected.death ? (
               <div className="place-row">
                 <span className="dot" style={{ background: "#111", border: `2px solid ${TYPE_COLORS[selected.type]}` }} />
-                <span>{selected.death.name}</span>
+                <span>{canonicalCity(selected.death.name)}</span>
               </div>
             ) : <div className="place-row" style={{ color: "var(--muted)" }}>—</div>}
 

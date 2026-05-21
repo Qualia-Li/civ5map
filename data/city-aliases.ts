@@ -200,7 +200,14 @@ const stripParen = (s: string) => s.replace(/\s*\([^)]*\)\s*$/, "").trim();
 const stripComma  = (s: string) => s.split(",")[0].trim();
 
 export function canonicalCity(raw: string): string {
-  const stripped = stripParen(raw);
-  const head = stripComma(stripped).toLowerCase();
-  return CITY_ALIASES[head] ?? CITY_ALIASES[stripped.toLowerCase()] ?? stripped;
+  const noParen = stripParen(raw);
+  const head    = stripComma(noParen);
+  const lcHead  = head.toLowerCase();
+  const lcFull  = noParen.toLowerCase();
+  // 1) alias on the bare head ("rhages" -> "Tehran")
+  // 2) alias on the whole stripped name ("seleucia-ctesiphon" -> "Ctesiphon")
+  // 3) otherwise drop trailing ", X" qualifier so "Chenggu, Shaanxi (traditional)"
+  //    displays as just "Chenggu" — keep parentheticals only when they're an
+  //    informative modern name (handled by the explicit alias map above).
+  return CITY_ALIASES[lcHead] ?? CITY_ALIASES[lcFull] ?? head;
 }
