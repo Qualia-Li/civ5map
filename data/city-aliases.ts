@@ -238,6 +238,13 @@ export const CITY_ALIASES: Record<string, string> = {
   "montmartre":           "Paris",
   "arcueil":              "Paris",
   "marnes-la-coquette":   "Paris",  // Pasteur's death, 11km from Paris center
+  "cormeilles-en-parisis":"Paris",  // Val-d'Oise commune ~17km NW
+  "bry-sur-marne":        "Paris",  // Val-de-Marne commune ~14km E
+  "saint-cloud":          "Paris",
+  "issy-les-moulineaux":  "Paris",
+  "courbevoie":           "Paris",
+  "puteaux":              "Paris",
+  "levallois-perret":     "Paris",
   "boulogne-billancourt": "Paris",
   "vincennes":            "Paris",
   "montparnasse":         "Paris",

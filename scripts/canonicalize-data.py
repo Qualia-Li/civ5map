@@ -87,7 +87,11 @@ ALIASES = {
     "wapping":"London","shoreditch":"London","islington":"London",
     "marylebone":"London","soho":"London","bloomsbury":"London",
     # Paris suburbs
-    "marnes-la-coquette":"Paris","boulogne-billancourt":"Paris",
+    "marnes-la-coquette":"Paris","cormeilles-en-parisis":"Paris",
+    "bry-sur-marne":"Paris","saint-cloud":"Paris",
+    "issy-les-moulineaux":"Paris","courbevoie":"Paris",
+    "puteaux":"Paris","levallois-perret":"Paris",
+    "boulogne-billancourt":"Paris",
     "vincennes":"Paris","montparnasse":"Paris","le marais":"Paris",
     "belleville":"Paris","saint-germain":"Paris",
     # Chicago / Moscow / Berlin / Vienna
