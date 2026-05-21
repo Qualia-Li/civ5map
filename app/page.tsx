@@ -235,7 +235,7 @@ export default function Page() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
               <span style={{ color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.08 + "em" }}>
-                {cluster.people.length} at {cluster.place}
+                {cluster.people.length} at {canonicalCity(cluster.place)}
               </span>
               <span onClick={() => setCluster(null)}
                 style={{ cursor: "pointer", color: "var(--muted)", fontSize: 11 }}>close ×</span>

@@ -13,10 +13,23 @@ import { PEOPLE_GENERAL }   from "./by-type/general";
 import { PEOPLE_ADMIRAL }   from "./by-type/admiral";
 import { PEOPLE_PROPHET }   from "./by-type/prophet";
 
+// Normalize a name down to {first-word, last-word} so e.g.
+//   "Wolfgang Amadeus Mozart" ~ "Wolfgang Mozart"
+//   "Vincent van Gogh"        ~ "Vincent Van Gogh"
+function nameKey(name: string): string {
+  const tokens = name
+    .toLowerCase()
+    .replace(/[.,]/g, "")
+    .split(/\s+/)
+    .filter((w) => !["van", "von", "de", "del", "della", "di", "da", "ibn", "al", "el", "the", "of", "the"].includes(w));
+  if (tokens.length <= 1) return tokens.join("");
+  return tokens[0] + ":" + tokens[tokens.length - 1];
+}
+
 function dedupe(list: Person[]): Person[] {
   const seen = new Map<string, Person>();
   for (const p of list) {
-    const key = `${p.type}:${p.name.toLowerCase().replace(/\s+/g, "")}`;
+    const key = `${p.type}:${nameKey(p.name)}`;
     // First entry wins (curated overrides codex output for duplicates).
     if (!seen.has(key)) seen.set(key, p);
   }
