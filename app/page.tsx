@@ -127,10 +127,10 @@ export default function Page() {
         <Map people={filtered} selected={selected} onSelect={setSelected} />
 
         <div className="legend">
-          <div>Map markers</div>
-          <div className="row"><span className="ring" /> Born</div>
-          <div className="row"><span className="ring filled" /> Worked / lived</div>
-          <div className="row"><span className="ring filled" style={{ background: "#111" }} /> Died</div>
+          <div>Markers — colored by Great Person type</div>
+          <div className="row"><span className="ring" /> Born (ring)</div>
+          <div className="row"><span className="ring filled" /> Worked / lived (filled)</div>
+          <div className="row"><span className="ring" style={{ background: "#0a1118" }} /> Died (dark center)</div>
         </div>
 
         <div className="timeline">

@@ -1,9 +1,17 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { MapContainer, TileLayer, CircleMarker, Polyline, Tooltip, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import {
+  ComposableMap, Geographies, Geography, ZoomableGroup, Marker, Line, Sphere, Graticule,
+} from "react-simple-maps";
+import {
+  geoNaturalEarth1, geoEqualEarth, geoMercator, geoOrthographic,
+  geoAzimuthalEqualArea,
+  GeoProjection,
+} from "d3-geo";
 import type { Person, GPType } from "../data/people-types";
+
+const WORLD_TOPO = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 const TYPE_COLORS: Record<GPType, string> = {
   Scientist: "#5fbcd3",
@@ -17,20 +25,15 @@ const TYPE_COLORS: Record<GPType, string> = {
   Prophet:   "#f9e79f",
 };
 
-function FocusOnSelection({ selected }: { selected: Person | null }) {
-  const map = useMap();
-  useEffect(() => {
-    if (!selected) return;
-    const pts: [number, number][] = [];
-    if (selected.birth) pts.push(selected.birth.coords);
-    if (selected.work)  pts.push(selected.work.coords);
-    if (selected.death) pts.push(selected.death.coords);
-    if (pts.length === 0) return;
-    if (pts.length === 1) map.flyTo(pts[0], 5, { duration: 0.8 });
-    else map.flyToBounds(pts, { padding: [80, 80], duration: 0.8, maxZoom: 6 });
-  }, [selected, map]);
-  return null;
-}
+type ProjName = "naturalEarth" | "equalEarth" | "robinson" | "mercator" | "orthographic";
+
+const PROJECTIONS: { value: ProjName; label: string; build: () => GeoProjection }[] = [
+  { value: "naturalEarth", label: "Natural Earth", build: geoNaturalEarth1 },
+  { value: "equalEarth",   label: "Equal Earth",   build: geoEqualEarth },
+  { value: "robinson",     label: "Azimuthal",     build: geoAzimuthalEqualArea },
+  { value: "orthographic", label: "Globe",         build: geoOrthographic },
+  { value: "mercator",     label: "Mercator",      build: geoMercator },
+];
 
 interface Props {
   people: Person[];
@@ -38,72 +41,188 @@ interface Props {
   onSelect: (p: Person) => void;
 }
 
+// react-simple-maps expects [lng, lat]; our data is [lat, lng].
+const toLngLat = (c: [number, number]): [number, number] => [c[1], c[0]];
+
 export default function Map({ people, selected, onSelect }: Props) {
+  const [proj, setProj] = useState<ProjName>("naturalEarth");
+  const [center, setCenter] = useState<[number, number]>([10, 20]);
+  const [zoom, setZoom] = useState(1);
+  // Orthographic spin
+  const [rotate, setRotate] = useState<[number, number, number]>([-10, -20, 0]);
+  const dragRef = useRef<{ x: number; y: number; r0: [number, number, number] } | null>(null);
+
+  useEffect(() => {
+    if (!selected) return;
+    const pts: [number, number][] = [];
+    if (selected.birth) pts.push(toLngLat(selected.birth.coords));
+    if (selected.work)  pts.push(toLngLat(selected.work.coords));
+    if (selected.death) pts.push(toLngLat(selected.death.coords));
+    if (pts.length === 0) return;
+    const lng = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+    const lat = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    setCenter([lng, lat]);
+    setZoom(2.4);
+    if (proj === "orthographic") setRotate([-lng, -lat, 0]);
+  }, [selected, proj]);
+
+  const projConf = useMemo(() => {
+    if (proj === "orthographic") {
+      return { rotate, scale: 220 } as any;
+    }
+    return undefined;
+  }, [proj, rotate]);
+
+  const projComponent = PROJECTIONS.find((p) => p.value === proj)!.build;
+  // react-simple-maps accepts a string id for built-in projections; we pass the d3 function.
+
   return (
-    <MapContainer
-      center={[30, 20]}
-      zoom={2}
-      worldCopyJump
-      style={{ width: "100%", height: "100vh" }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openstreetmap.org">OSM</a>'
-        url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
-      />
-      {people.map((p) => {
-        const color = TYPE_COLORS[p.type];
-        const isSel = selected?.name === p.name;
-        return (
-          <React.Fragment key={`${p.type}:${p.name}`}>
-            {p.birth && (
-              <CircleMarker
-                key={`${p.name}-birth`}
-                center={p.birth.coords}
-                radius={isSel ? 8 : 5}
-                pathOptions={{ color, fillColor: color, fillOpacity: 0, weight: 2 }}
-                eventHandlers={{ click: () => onSelect(p) }}
-              >
-                <Tooltip>{p.name} — born {p.birth.name}</Tooltip>
-              </CircleMarker>
-            )}
-            {p.work && (
-              <CircleMarker
-                key={`${p.name}-work`}
-                center={p.work.coords}
-                radius={isSel ? 9 : 6}
-                pathOptions={{ color, fillColor: color, fillOpacity: 0.85, weight: 1 }}
-                eventHandlers={{ click: () => onSelect(p) }}
-              >
-                <Tooltip>{p.name} — {p.work.name}</Tooltip>
-              </CircleMarker>
-            )}
-            {p.death && (
-              <CircleMarker
-                key={`${p.name}-death`}
-                center={p.death.coords}
-                radius={isSel ? 7 : 4}
-                pathOptions={{ color, fillColor: "#111", fillOpacity: 0.9, weight: 2 }}
-                eventHandlers={{ click: () => onSelect(p) }}
-              >
-                <Tooltip>{p.name} — died {p.death.name}</Tooltip>
-              </CircleMarker>
-            )}
-            {isSel && p.birth && p.work && (
-              <Polyline positions={[p.birth.coords, p.work.coords]}
-                pathOptions={{ color, dashArray: "4 6", weight: 2, opacity: 0.7 }} />
-            )}
-            {isSel && p.work && p.death && (
-              <Polyline positions={[p.work.coords, p.death.coords]}
-                pathOptions={{ color, dashArray: "4 6", weight: 2, opacity: 0.7 }} />
-            )}
-            {isSel && !p.work && p.birth && p.death && (
-              <Polyline positions={[p.birth.coords, p.death.coords]}
-                pathOptions={{ color, dashArray: "4 6", weight: 2, opacity: 0.7 }} />
-            )}
-          </React.Fragment>
-        );
-      })}
-      <FocusOnSelection selected={selected} />
-    </MapContainer>
+    <div style={{ position: "relative", width: "100%", height: "100vh", background: "#0a1118" }}>
+      <div style={{
+        position: "absolute", top: 12, left: 12, zIndex: 10,
+        background: "rgba(15,20,25,0.92)", border: "1px solid #324155",
+        borderRadius: 8, padding: "6px 10px", display: "flex", gap: 6, alignItems: "center",
+        fontSize: 12, color: "#9aa9bc"
+      }}>
+        <span>Projection:</span>
+        {PROJECTIONS.map((p) => (
+          <button key={p.value}
+            onClick={() => { setProj(p.value); setZoom(1); setCenter([10, 20]); }}
+            style={{
+              padding: "3px 8px", borderRadius: 999, cursor: "pointer",
+              background: proj === p.value ? "#d4a85a" : "transparent",
+              color: proj === p.value ? "#1a1300" : "#e8eef5",
+              border: "1px solid " + (proj === p.value ? "#d4a85a" : "#324155"),
+              fontSize: 11, fontWeight: proj === p.value ? 600 : 400,
+            }}>{p.label}</button>
+        ))}
+      </div>
+
+      <ComposableMap
+        projection={projComponent as any}
+        projectionConfig={projConf}
+        width={1200}
+        height={700}
+        style={{ width: "100%", height: "100%", background: "#0a1118" }}
+        onMouseDown={(e: React.MouseEvent) => {
+          if (proj !== "orthographic") return;
+          dragRef.current = { x: e.clientX, y: e.clientY, r0: rotate };
+        }}
+        onMouseMove={(e: React.MouseEvent) => {
+          if (!dragRef.current) return;
+          const dx = e.clientX - dragRef.current.x;
+          const dy = e.clientY - dragRef.current.y;
+          setRotate([dragRef.current.r0[0] + dx * 0.4, dragRef.current.r0[1] - dy * 0.4, 0]);
+        }}
+        onMouseUp={() => { dragRef.current = null; }}
+        onMouseLeave={() => { dragRef.current = null; }}
+      >
+        <Sphere id="sphere" stroke="#324155" strokeWidth={0.5} fill="#0e1620" />
+        <Graticule stroke="#1e2a3a" strokeWidth={0.4} />
+        <ZoomableGroup
+          center={center}
+          zoom={proj === "orthographic" ? 1 : zoom}
+          onMoveEnd={({ coordinates, zoom: z }) => {
+            if (proj !== "orthographic") {
+              setCenter(coordinates as [number, number]);
+              setZoom(z);
+            }
+          }}
+          minZoom={0.8}
+          maxZoom={6}
+        >
+          <Geographies geography={WORLD_TOPO}>
+            {({ geographies }) =>
+              geographies.map((geo) => (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill="#1b232e"
+                  stroke="#324155"
+                  strokeWidth={0.4}
+                  style={{
+                    default: { outline: "none" },
+                    hover:   { fill: "#243042", outline: "none" },
+                    pressed: { outline: "none" },
+                  }}
+                />
+              ))
+            }
+          </Geographies>
+
+          {/* Life-path lines for the selected person */}
+          {selected && selected.birth && selected.work && (
+            <Line
+              from={toLngLat(selected.birth.coords)}
+              to={toLngLat(selected.work.coords)}
+              stroke={TYPE_COLORS[selected.type]}
+              strokeWidth={1.5}
+              strokeDasharray="3 4"
+              strokeLinecap="round"
+            />
+          )}
+          {selected && selected.work && selected.death && (
+            <Line
+              from={toLngLat(selected.work.coords)}
+              to={toLngLat(selected.death.coords)}
+              stroke={TYPE_COLORS[selected.type]}
+              strokeWidth={1.5}
+              strokeDasharray="3 4"
+              strokeLinecap="round"
+            />
+          )}
+          {selected && !selected.work && selected.birth && selected.death && (
+            <Line
+              from={toLngLat(selected.birth.coords)}
+              to={toLngLat(selected.death.coords)}
+              stroke={TYPE_COLORS[selected.type]}
+              strokeWidth={1.5}
+              strokeDasharray="3 4"
+              strokeLinecap="round"
+            />
+          )}
+
+          {/* Markers */}
+          {people.map((p) => {
+            const color = TYPE_COLORS[p.type];
+            const isSel = selected?.name === p.name;
+            return (
+              <React.Fragment key={`${p.type}:${p.name}`}>
+                {p.birth && (
+                  <Marker coordinates={toLngLat(p.birth.coords)} onClick={() => onSelect(p)}>
+                    <circle r={isSel ? 5 : 3.2} fill="none" stroke={color}
+                      strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
+                    <title>{p.name} — born {p.birth.name}</title>
+                  </Marker>
+                )}
+                {p.work && (
+                  <Marker coordinates={toLngLat(p.work.coords)} onClick={() => onSelect(p)}>
+                    <circle r={isSel ? 5.5 : 3.5} fill={color} fillOpacity={0.9}
+                      stroke={isSel ? "#fff" : "none"} strokeWidth={isSel ? 1 : 0}
+                      style={{ cursor: "pointer" }} />
+                    <title>{p.name} — {p.work.name}</title>
+                  </Marker>
+                )}
+                {p.death && (
+                  <Marker coordinates={toLngLat(p.death.coords)} onClick={() => onSelect(p)}>
+                    <circle r={isSel ? 4.5 : 2.8} fill="#0a1118" stroke={color}
+                      strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
+                    <title>{p.name} — died {p.death.name}</title>
+                  </Marker>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </ZoomableGroup>
+      </ComposableMap>
+
+      {proj === "orthographic" && (
+        <div style={{
+          position: "absolute", bottom: 60, left: 14, fontSize: 11,
+          color: "#9aa9bc", background: "rgba(15,20,25,0.85)",
+          padding: "4px 10px", borderRadius: 6, border: "1px solid #324155",
+        }}>Drag the globe to rotate</div>
+      )}
+    </div>
   );
 }
