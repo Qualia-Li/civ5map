@@ -276,8 +276,8 @@ export default function Page() {
           const vw = typeof window !== "undefined" ? window.innerWidth  : 1600;
           const vh = typeof window !== "undefined" ? window.innerHeight : 900;
           // Cap popup size to (viewport - 16) so it always fits, then position.
-          const W = Math.min(260, vw - 16);
-          const H = Math.min(360, vh - 16, 60 + 28 * cluster.people.length);
+          const W = Math.min(340, vw - 16);
+          const H = Math.min(420, vh - 16, 60 + 30 * cluster.people.length);
           const preferLeft = cluster.x + 8 + W > vw ? cluster.x - W - 8 : cluster.x + 8;
           const preferTop  = cluster.y + 8 + H > vh ? cluster.y - H - 8 : cluster.y + 8;
           const left = Math.max(8, Math.min(preferLeft, vw - W - 8));
@@ -308,9 +308,13 @@ export default function Page() {
                 style={{ padding: "5px 6px", borderRadius: 4, cursor: "pointer",
                   display: "flex", alignItems: "center", gap: 8,
                   background: selected?.name === p.name ? "var(--panel-2)" : "transparent" }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: TYPE_COLORS[p.type] }} />
-                <span>{p.name}</span>
-                <span style={{ color: "var(--muted)", fontSize: 11, marginLeft: "auto" }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%",
+                  background: TYPE_COLORS[p.type], flexShrink: 0 }} />
+                <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap",
+                  overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</span>
+                <span style={{ color: "var(--muted)", fontSize: 11,
+                  whiteSpace: "nowrap", flexShrink: 0,
+                  fontVariantNumeric: "tabular-nums" }}>
                   {fmtYear(p.born)} · {p.type}
                 </span>
               </div>
