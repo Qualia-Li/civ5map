@@ -148,6 +148,10 @@ export const CITY_ALIASES: Record<string, string> = {
   "arcetri, florence":    "Florence",
   "careggi":              "Florence",
   "fiesole":              "Florence",   // hilltop town fully absorbed into Greater Florence
+  "vinci":                "Florence",   // Leonardo's birthplace — comune of Metro Florence
+  "anchiano":             "Florence",   // hamlet near Vinci where Leonardo was actually born
+  "caprese":              "Florence",   // Michelangelo's birth village, Metro Florence
+  "caprese michelangelo": "Florence",
   "venice":               "Venice",
   "venezia":              "Venice",
   "rome":                 "Rome",

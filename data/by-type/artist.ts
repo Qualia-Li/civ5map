@@ -65,7 +65,7 @@ export const PEOPLE_ARTIST: Person[] = [
     era: 'Renaissance',
     born: 1475,
     died: 1564,
-    birth: { name: 'Caprese Michelangelo', coords: [43.6408, 11.9852] },
+    birth: { name: 'Florence', coords: [43.7696, 11.2558] },
     work: { name: 'Rome', coords: [41.9028, 12.4964] },
     death: { name: 'Rome', coords: [41.9028, 12.4964] },
     works: ['David', 'Pieta', 'Sistine Chapel ceiling', 'The Last Judgment'],

@@ -46,6 +46,8 @@ ALIASES = {
     "padova":"Padua","firenze":"Florence","venezia":"Venice","roma":"Rome",
     "arcetri":"Florence","arcetri, florence":"Florence",
     "careggi":"Florence","fiesole":"Florence",
+    "vinci":"Florence","anchiano":"Florence",
+    "caprese":"Florence","caprese michelangelo":"Florence",
     # Russia
     "leningrad":"Saint Petersburg","petrograd":"Saint Petersburg",
     "st petersburg":"Saint Petersburg","st. petersburg":"Saint Petersburg",
