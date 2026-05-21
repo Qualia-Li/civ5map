@@ -94,7 +94,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     born: 1021,
     died: 1086,
     birth: { name: 'Linchuan', coords: [27.9511, 116.3581] },
-    work: { name: 'Kaifeng', coords: [34.7970, 114.3079] },
+    work: { name: 'Kaifeng', coords: [34.7973, 114.3076] },
     death: { name: 'Jiangning', coords: [32.0603, 118.7969] },
     works: ['New Policies', 'Green Sprouts loans', 'State Trade Bureau reforms', 'Baojia administration'],
     blurb: 'Song reformer who treated credit, taxation, and state commerce as tools of national strength.'
@@ -136,7 +136,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     born: 1304,
     died: 1368,
     birth: { name: 'Tangier', coords: [35.7595, -5.8340] },
-    work: { name: 'Delhi', coords: [28.6139, 77.2090] },
+    work: { name: 'Delhi', coords: [28.6139, 77.209] },
     death: { name: 'Marrakesh', coords: [31.6295, -7.9811] },
     works: ['Rihla', 'Pilgrimage and trade circuits across the Indian Ocean', 'Diplomatic mission to Yuan China'],
     blurb: 'The greatest traveler of the medieval Islamic world, moving along the same routes as merchants and diplomats.'
@@ -318,9 +318,9 @@ export const PEOPLE_MERCHANT: Person[] = [
     era: 'Industrial',
     born: 1794,
     died: 1877,
-    birth: { name: 'New York City', coords: [40.5795, -74.1502] },
-    work: { name: 'New York City', coords: [40.7128, -74.0060] },
-    death: { name: 'New York City', coords: [40.7831, -73.9712] },
+    birth: { name: 'New York City', coords: [40.7128, -74.006] },
+    work: { name: 'New York City', coords: [40.7128, -74.006] },
+    death: { name: 'New York City', coords: [40.7128, -74.006] },
     works: ['Staten Island ferry business', 'Accessory Transit Company', 'New York Central Railroad'],
     blurb: 'The Commodore parlayed steamship profits into one of America’s first great railroad fortunes.'
   },
@@ -431,7 +431,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     born: 1848,
     died: 1909,
     birth: { name: 'Hempstead', coords: [40.7062, -73.6187] },
-    work: { name: 'New York City', coords: [40.7128, -74.0060] },
+    work: { name: 'New York City', coords: [40.7128, -74.006] },
     death: { name: 'Arden', coords: [41.3182, -74.1280] },
     works: ['Union Pacific reorganization', 'Southern Pacific control', 'Illinois Central investment'],
     blurb: 'Wall Street railroad strategist who rebuilt western transport networks through aggressive financial control.'

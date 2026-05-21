@@ -205,7 +205,7 @@ export const PEOPLE_ARTIST: Person[] = [
     era: 'Modern',
     born: 1928,
     died: 1999,
-    birth: { name: 'New York City', coords: [40.7128, -74.0060] },
+    birth: { name: 'New York City', coords: [40.7128, -74.006] },
     work: { name: 'Borehamwood', coords: [51.6567, -0.2795] },
     death: { name: 'Childwickbury Manor', coords: [51.7698, -0.3374] },
     works: ['2001: A Space Odyssey', 'Dr. Strangelove', 'A Clockwork Orange', 'Barry Lyndon'],

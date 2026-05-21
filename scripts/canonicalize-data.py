@@ -72,6 +72,46 @@ ALIASES = {
 
 PAREN_RX = re.compile(r"\s*\([^)]*\)\s*$")
 
+# When a place name canonicalizes to one of these (i.e. we've folded multiple
+# sub-locations into a single city), also snap its [lat, lng] to the city
+# centroid so map buckets/halos collapse to ONE spot instead of one per
+# original borough/suburb. Skip this for cities that aren't aggregation
+# targets — we don't want to move precise coords around unnecessarily.
+CITY_CENTROIDS = {
+    "New York City":   [40.7128, -74.0060],
+    "London":          [51.5074, -0.1278],
+    "Paris":           [48.8566,   2.3522],
+    "Tokyo":           [35.6762, 139.6503],
+    "Kyoto":           [35.0116, 135.7681],
+    "Seoul":           [37.5665, 126.9780],
+    "Beijing":         [39.9042, 116.4074],
+    "Nanjing":         [32.0603, 118.7969],
+    "Chang'an":        [34.3416, 108.9398],
+    "Suzhou":          [31.2989, 120.5853],
+    "Kaifeng":         [34.7973, 114.3076],
+    "Hangzhou":        [30.2741, 120.1551],
+    "Guangzhou":       [23.1291, 113.2644],
+    "Mumbai":          [19.0760,  72.8777],
+    "Chennai":         [13.0827,  80.2707],
+    "Kolkata":         [22.5726,  88.3639],
+    "Bengaluru":       [12.9716,  77.5946],
+    "Delhi":           [28.6139,  77.2090],
+    "Patna":           [25.5941,  85.1376],
+    "Varanasi":        [25.3176,  82.9739],
+    "Istanbul":        [41.0082,  28.9784],
+    "Izmir":           [38.4192,  27.1287],
+    "Antakya":         [36.2021,  36.1600],
+    "Mexico City":     [19.4326, -99.1332],
+    "Tehran":          [35.6892,  51.3890],
+    "Bukhara":         [39.7747,  64.4286],
+    "Ctesiphon":       [33.0858,  44.5803],
+    "Saint Petersburg":[59.9311,  30.3609],
+    "Volgograd":       [48.7080,  44.5133],
+    "Yekaterinburg":   [56.8389,  60.6057],
+    "Krasnodar":       [45.0355,  38.9753],
+}
+
+
 
 def canonical_city(raw: str) -> str:
     """Match data/city-aliases.ts canonicalCity() exactly."""
@@ -82,9 +122,10 @@ def canonical_city(raw: str) -> str:
     return ALIASES.get(lc_head) or ALIASES.get(lc_full) or head
 
 
-# Match all `name: '...'` / `name: "..."` strings inside birth/work/death blocks.
-PLACE_NAME_RX = re.compile(
-    r"(birth|work|death)\s*:\s*\{\s*name\s*:\s*(['\"])(.+?)\2",
+# Match the whole `birth/work/death: { name: '...', coords: [..,..] }` block
+# so we can rewrite both `name` and `coords` together.
+PLACE_BLOCK_RX = re.compile(
+    r"(birth|work|death)\s*:\s*\{\s*name\s*:\s*(['\"])(.+?)\2\s*,\s*coords\s*:\s*\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\]\s*\}",
     re.DOTALL,
 )
 
@@ -95,15 +136,17 @@ def canonicalize_file(path: str) -> int:
 
     def repl(m):
         nonlocal changed
-        kind, quote, name = m.group(1), m.group(2), m.group(3)
+        kind, quote, name, lat, lng = m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
         canon = canonical_city(name)
-        if canon != name:
+        new_coords = CITY_CENTROIDS.get(canon)
+        new_lat = f"{new_coords[0]}" if new_coords else lat
+        new_lng = f"{new_coords[1]}" if new_coords else lng
+        if canon != name or new_lat != lat or new_lng != lng:
             changed += 1
-        # Re-escape any single quotes in the canonical form when using ' quotes
         safe = canon.replace(quote, "\\" + quote)
-        return f"{kind}: {{ name: {quote}{safe}{quote}"
+        return f"{kind}: {{ name: {quote}{safe}{quote}, coords: [{new_lat}, {new_lng}] }}"
 
-    src2 = PLACE_NAME_RX.sub(repl, src)
+    src2 = PLACE_BLOCK_RX.sub(repl, src)
     if src2 != src:
         open(path, "w", encoding="utf-8").write(src2)
     return changed
