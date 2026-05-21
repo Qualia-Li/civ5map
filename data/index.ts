@@ -29,8 +29,10 @@ function nameKey(name: string): string {
 function dedupe(list: Person[]): Person[] {
   const seen = new Map<string, Person>();
   for (const p of list) {
-    const key = `${p.type}:${nameKey(p.name)}`;
-    // First entry wins (curated overrides codex output for duplicates).
+    // Dedupe by NAME alone (not type) so e.g. Zheng He doesn't appear as both
+    // Admiral and Merchant. First entry wins — the import order in this file
+    // sets the priority.
+    const key = nameKey(p.name);
     if (!seen.has(key)) seen.set(key, p);
   }
   return [...seen.values()].sort((a, b) => (a.born ?? 0) - (b.born ?? 0));

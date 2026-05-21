@@ -169,20 +169,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     works: ['Founding of the Medici Bank', 'Papal banking contracts', 'Florentine branch expansion'],
     blurb: 'Giovanni di Bicci de’ Medici built the banking house that made Medici wealth and influence possible.'
   },
-  {
-    name: 'Zheng He',
-    type: 'Merchant',
-    civ: 'China',
-    country: 'China',
-    era: 'Medieval',
-    born: 1371,
-    died: 1433,
-    birth: { name: 'Kunyang, Yunnan', coords: [24.8801, 102.6004] },
-    work: { name: 'Nanjing', coords: [32.0603, 118.7969] },
-    death: { name: 'Calicut (traditional)', coords: [11.2588, 75.7804] },
-    works: ['First treasure voyage', 'Voyage to Hormuz', 'Voyage to East Africa', 'Ming tribute trade missions'],
-    blurb: 'Ming admiral and court agent whose treasure fleets fused diplomacy, prestige exchange, and maritime commerce.'
-  },
+  // Zheng He removed from Merchant — kept solely as Admiral (data/by-type/admiral.ts).
   {
     name: 'Vasco Da Gama',
     type: 'Merchant',
