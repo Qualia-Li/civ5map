@@ -34,7 +34,9 @@ h1, h2, h3 { margin: 0; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2);
   color: var(--text); font-size: 12px; cursor: pointer; user-select: none; }
-.chip.active { background: var(--accent); color: #1a1300; border-color: var(--accent); font-weight: 600; }
+/* Active state changes color only — never font-weight or border width, so
+   the chip's bounding box never shifts. */
+.chip.active { background: var(--accent); color: #1a1300; border-color: var(--accent); }
 .chip.type.active { color: #0f1419; }
 .chip[data-type="Scientist"].active { background: var(--c-Scientist); }
 .chip[data-type="Engineer"].active  { background: var(--c-Engineer); }

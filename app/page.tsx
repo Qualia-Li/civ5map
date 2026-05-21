@@ -139,10 +139,19 @@ export default function Page() {
     return [...activeTypes].join(" / ");
   }, [activeTypes]);
 
-  const toggle = <T,>(set: Set<T>, setter: (s: Set<T>) => void, value: T) => {
-    const next = new Set(set);
-    if (next.has(value)) next.delete(value); else next.add(value);
-    setter(next);
+  // Click a chip to isolate that single category. Click an already-solo
+  // chip again to restore the whole set. Shift-click toggles add/remove
+  // for users who want to compose a multi-select.
+  const isolate = <T,>(set: Set<T>, setter: (s: Set<T>) => void, all: T[], value: T, ev: React.MouseEvent) => {
+    if (ev.shiftKey) {
+      const next = new Set(set);
+      if (next.has(value)) next.delete(value); else next.add(value);
+      if (next.size === 0) setter(new Set(all));
+      else setter(next);
+      return;
+    }
+    const isSolo = set.size === 1 && set.has(value);
+    setter(isSolo ? new Set(all) : new Set([value]));
   };
 
   // Timeline (-2700 to 2025)
@@ -182,7 +191,8 @@ export default function Page() {
               <div key={t}
                 className={`chip type ${activeTypes.has(t) ? "active" : ""}`}
                 data-type={t}
-                onClick={() => toggle(activeTypes, setActiveTypes, t)}>
+                title="Click to isolate · shift-click to add/remove"
+                onClick={(e) => isolate(activeTypes, setActiveTypes, TYPES, t, e)}>
                 {t}
               </div>
             ))}
@@ -195,7 +205,8 @@ export default function Page() {
             {ERAS.map((e) => (
               <div key={e}
                 className={`chip ${activeEras.has(e) ? "active" : ""}`}
-                onClick={() => toggle(activeEras, setActiveEras, e)}>
+                title="Click to isolate · shift-click to add/remove"
+                onClick={(ev) => isolate(activeEras, setActiveEras, ERAS, e, ev)}>
                 {e}
               </div>
             ))}
