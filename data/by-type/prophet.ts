@@ -229,7 +229,7 @@ export const PEOPLE_PROPHET: Person[] = [
     name: 'Saint Paul',
     type: 'Prophet',
     civ: 'Rome/Judea',
-    country: 'Turkey/Israel/Italy',
+    country: 'Türkiye/Israel/Italy',
     era: 'Classical',
     born: 5,
     died: 64,
