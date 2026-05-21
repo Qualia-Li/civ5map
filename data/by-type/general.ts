@@ -38,7 +38,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -540,
     died: -480,
     birth: { name: "Sparta", coords: [37.0755, 22.4297] },
-    work: { name: "Thermopylae", coords: [38.7966, 22.5361] },
+    work: { name: "Sparta", coords: [37.0755, 22.4297] },
     death: { name: "Thermopylae", coords: [38.7966, 22.5361] },
     works: ["Battle of Thermopylae", "Defense of the Hellenic alliance"],
     blurb: "Spartan king remembered for the doomed but iconic stand against Xerxes at Thermopylae."
@@ -52,7 +52,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -454,
     died: -395,
     birth: { name: "Sparta", coords: [37.0755, 22.4297] },
-    work: { name: "Aegospotami", coords: [40.2137, 26.3889] },
+    work: { name: "Sparta", coords: [37.0755, 22.4297] },
     death: { name: "Haliartus", coords: [38.3932, 23.1028] },
     works: ["Battle of Notium", "Battle of Aegospotami", "Ionian War campaign"],
     blurb: "The Spartan admiral-general who broke Athenian naval power at the end of the Peloponnesian War."
@@ -80,7 +80,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -275,
     died: -228,
     birth: { name: "Carthage", coords: [36.8529, 10.3230] },
-    work: { name: "Akra Leuke", coords: [38.3452, -0.4810] },
+    work: { name: "Carthage", coords: [36.8529, 10.323] },
     death: { name: "Helike", coords: [38.2699, -0.7126] },
     works: ["Sicilian campaign", "Mercenary War", "Iberian campaign"],
     blurb: "Carthage's great field commander rebuilt Barcid power in Iberia after the First Punic War."
@@ -108,7 +108,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -236,
     died: -183,
     birth: { name: "Rome", coords: [41.9028, 12.4964] },
-    work: { name: "Zama", coords: [36.2220, 8.7120] },
+    work: { name: "Rome", coords: [41.9028, 12.4964] },
     death: { name: "Liternum", coords: [40.9520, 14.0380] },
     works: ["Capture of New Carthage", "Battle of Baecula", "Battle of Ilipa", "Battle of Zama"],
     blurb: "Rome's victor over Hannibal, Scipio finished the Second Punic War with a decisive African campaign."
@@ -122,7 +122,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -82,
     died: -46,
     birth: { name: "Gergovia", coords: [45.7200, 3.1200] },
-    work: { name: "Alesia", coords: [47.5370, 4.4861] },
+    work: { name: "Gergovia", coords: [45.72, 3.12] },
     death: { name: "Rome", coords: [41.9028, 12.4964] },
     works: ["Gallic revolt of 52 BCE", "Battle of Gergovia", "Siege of Alesia"],
     blurb: "Arvernian chieftain who came closest to uniting Gaul against Julius Caesar."
@@ -150,7 +150,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 155,
     died: 220,
     birth: { name: "Qiao County", coords: [33.8467, 115.7786] },
-    work: { name: "Guandu", coords: [35.0186, 113.7884] },
+    work: { name: "Xuchang", coords: [34.0357, 113.819] },
     death: { name: "Luoyang", coords: [34.6197, 112.4540] },
     works: ["Campaign against Dong Zhuo", "Battle of Guandu", "Northern campaigns", "Battle of Red Cliffs"],
     blurb: "Warlord, statesman, and commander whose victories laid the foundations of the state of Wei."
@@ -164,7 +164,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 181,
     died: 234,
     birth: { name: "Yangdu County", coords: [35.1047, 118.3564] },
-    work: { name: "Wuzhang Plains", coords: [34.4146, 107.8923] },
+    work: { name: "Chengdu", coords: [30.5728, 104.0668] },
     death: { name: "Wuzhang Plains", coords: [34.4146, 107.8923] },
     works: ["Longzhong Plan", "Capture of Hanzhong", "Southern campaign", "Northern Expeditions"],
     blurb: "Shu Han's famed strategist, celebrated for logistics, diplomacy, and relentless northern campaigning."
@@ -178,7 +178,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 500,
     died: 565,
     birth: { name: "Germania", coords: [42.2892, 23.2653] },
-    work: { name: "Dara", coords: [37.1833, 40.8944] },
+    work: { name: "Istanbul", coords: [41.0082, 28.9784] },
     death: { name: "Istanbul", coords: [41.0082, 28.9784] },
     works: ["Battle of Dara", "Vandalic War", "Gothic War", "Defense of Constantinople"],
     blurb: "Justinian's greatest general, Belisarius recovered North Africa and much of Italy for the empire."
@@ -192,7 +192,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 592,
     died: 642,
     birth: { name: "Mecca", coords: [21.3891, 39.8579] },
-    work: { name: "Yarmouk", coords: [32.4933, 35.9900] },
+    work: { name: "Homs", coords: [34.7304, 36.7097] },
     death: { name: "Homs", coords: [34.7304, 36.7097] },
     works: ["Ridda Wars", "Battle of Walaja", "Battle of Yarmouk", "Conquest of Damascus"],
     blurb: "Known as the Sword of Allah, Khalid was the early caliphate's most formidable field commander."
@@ -206,7 +206,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 688,
     died: 741,
     birth: { name: "Herstal", coords: [50.6690, 5.6230] },
-    work: { name: "Tours-Poitiers battlefield", coords: [46.6711, 0.3056] },
+    work: { name: "Aachen", coords: [50.7753, 6.0839] },
     death: { name: "Quierzy", coords: [49.5692, 3.1341] },
     works: ["Battle of Amblève", "Battle of Vincy", "Battle of Tours", "Saxon campaigns"],
     blurb: "The Frankish mayor of the palace whose victory near Tours secured Carolingian dominance."
@@ -234,7 +234,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1028,
     died: 1087,
     birth: { name: "Falaise", coords: [48.8922, -0.1987] },
-    work: { name: "Hastings", coords: [50.9110, 0.4870] },
+    work: { name: "Rouen", coords: [49.4431, 1.0993] },
     death: { name: "Rouen", coords: [49.4431, 1.0993] },
     works: ["Battle of Mortemer", "Norman conquest of England", "Battle of Hastings", "Harrying of the North"],
     blurb: "Duke of Normandy and conqueror of England, he remade English kingship after 1066."
@@ -248,7 +248,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1175,
     died: 1248,
     birth: { name: "Khentii", coords: [48.0667, 111.5000] },
-    work: { name: "Mohi", coords: [47.9488, 20.7067] },
+    work: { name: "Karakorum", coords: [47.1833, 102.8333] },
     death: { name: "Mongolia", coords: [47.8864, 106.9057] },
     works: ["Khwarezmian campaign", "Battle of the Kalka River", "Invasion of Rus'", "Battle of Mohi"],
     blurb: "Genghis Khan's master operational commander, Subutai led some of the Mongols' deepest and most coordinated invasions."
@@ -388,7 +388,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1599,
     died: 1658,
     birth: { name: "Huntingdon", coords: [52.3305, -0.1865] },
-    work: { name: "Marston Moor", coords: [53.9630, -1.1720] },
+    work: { name: "London", coords: [51.5074, -0.1278] },
     death: { name: "London", coords: [51.5074, -0.1278] },
     works: ["Battle of Marston Moor", "Battle of Naseby", "Irish campaign", "Scottish campaign"],
     blurb: "Oliver Cromwell built the New Model Army into the decisive instrument of parliamentary victory."
@@ -402,7 +402,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1663,
     died: 1736,
     birth: { name: "Paris", coords: [48.8566, 2.3522] },
-    work: { name: "Zenta", coords: [45.9292, 20.0790] },
+    work: { name: "Vienna", coords: [48.2082, 16.3738] },
     death: { name: "Vienna", coords: [48.2082, 16.3738] },
     works: ["Battle of Zenta", "War of the Spanish Succession", "Battle of Turin", "Siege of Belgrade"],
     blurb: "Prince Eugene was the Habsburg monarchy's most successful commander against both Ottomans and Bourbons."
@@ -416,7 +416,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1758,
     died: 1805,
     birth: { name: "Burnham Thorpe", coords: [52.9080, 0.7630] },
-    work: { name: "Cape Trafalgar", coords: [36.1800, -6.0300] },
+    work: { name: "Portsmouth", coords: [50.8198, -1.088] },
     death: { name: "Cape Trafalgar", coords: [36.1800, -6.0300] },
     works: ["Battle of Cape St Vincent", "Battle of the Nile", "Battle of Copenhagen", "Battle of Trafalgar"],
     blurb: "Britain's most famous admiral destroyed the main Franco-Spanish fleets and secured maritime supremacy."
@@ -444,7 +444,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1807,
     died: 1870,
     birth: { name: "Stratford Hall", coords: [38.1620, -76.8619] },
-    work: { name: "Gettysburg", coords: [39.8309, -77.2311] },
+    work: { name: "Richmond", coords: [37.5407, -77.436] },
     death: { name: "Lexington", coords: [37.7840, -79.4428] },
     works: ["Seven Days Battles", "Second Bull Run", "Chancellorsville", "Gettysburg campaign"],
     blurb: "The Confederacy's most renowned commander won repeated operational victories before defeat became inevitable."
@@ -458,7 +458,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1884,
     died: 1943,
     birth: { name: "Nagaoka", coords: [37.4465, 138.8512] },
-    work: { name: "Truk Lagoon", coords: [7.4167, 151.7833] },
+    work: { name: "Tokyo", coords: [35.6762, 139.6503] },
     death: { name: "Near Bougainville", coords: [-6.2330, 155.5650] },
     works: ["Attack on Pearl Harbor", "Indian Ocean raid", "Battle of Midway", "Solomon Islands campaign"],
     blurb: "Architect of Japan's early carrier-war strategy, Yamamoto combined daring planning with a grim sense of odds."
@@ -472,7 +472,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1885,
     died: 1945,
     birth: { name: "Los Angeles", coords: [34.0522, -118.2437] },
-    work: { name: "Bastogne", coords: [50.0005, 5.7182] },
+    work: { name: "Washington", coords: [38.9072, -77.0369] },
     death: { name: "Heidelberg", coords: [49.3988, 8.6724] },
     works: ["Operation Torch", "Sicily campaign", "Lorraine campaign", "Relief of Bastogne"],
     blurb: "Patton excelled at mobile warfare and aggressive exploitation during the U.S. Army's European campaigns."
@@ -486,7 +486,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1887,
     died: 1976,
     birth: { name: "London", coords: [51.5074, -0.1278] },
-    work: { name: "El Alamein", coords: [30.8308, 28.9550] },
+    work: { name: "London", coords: [51.5074, -0.1278] },
     death: { name: "Alton", coords: [51.1490, -0.9750] },
     works: ["Second Battle of El Alamein", "Sicily campaign", "Normandy campaign", "Operation Market Garden"],
     blurb: "Montgomery restored Allied fortunes in North Africa and later commanded major Anglo-Commonwealth operations in northwest Europe."
@@ -500,7 +500,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1888,
     died: 1954,
     birth: { name: "Kulm", coords: [53.3484, 18.4254] },
-    work: { name: "Sedan", coords: [49.7019, 4.9403] },
+    work: { name: "Berlin", coords: [52.52, 13.405] },
     death: { name: "Schwangau", coords: [47.5760, 10.7366] },
     works: ["Poland campaign", "Battle of Sedan", "Operation Barbarossa", "Panzer doctrine"],
     blurb: "The chief theorist of German armored warfare, Guderian helped turn panzer concentration into operational doctrine."
@@ -514,7 +514,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1891,
     died: 1944,
     birth: { name: "Heidenheim an der Brenz", coords: [48.6770, 10.1510] },
-    work: { name: "El Alamein", coords: [30.8308, 28.9550] },
+    work: { name: "Berlin", coords: [52.52, 13.405] },
     death: { name: "Herrlingen", coords: [48.4195, 9.8879] },
     works: ["1940 Channel campaign", "Siege of Tobruk", "Gazala campaign", "North Africa campaign"],
     blurb: "The 'Desert Fox' won fame for bold maneuver warfare, though logistics and strategy ultimately defeated him."
@@ -528,7 +528,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1896,
     died: 1974,
     birth: { name: "Strelkovka", coords: [54.7160, 35.2420] },
-    work: { name: "Berlin", coords: [52.52, 13.405] },
+    work: { name: "Moscow", coords: [55.7558, 37.6173] },
     death: { name: "Moscow", coords: [55.7558, 37.6173] },
     works: ["Battle of Khalkhin Gol", "Defense of Moscow", "Battle of Stalingrad", "Battle of Berlin"],
     blurb: "The Red Army's most celebrated marshal, Zhukov was central to the Soviet Union's major victories over Nazi Germany."
@@ -542,7 +542,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -418,
     died: -362,
     birth: { name: "Thebes", coords: [38.3250, 23.3180] },
-    work: { name: "Leuctra", coords: [38.2010, 23.2640] },
+    work: { name: "Thebes", coords: [38.325, 23.318] },
     death: { name: "Mantinea", coords: [37.6290, 22.3880] },
     works: ["Battle of Leuctra", "Peloponnesian campaigns", "Liberation of Messenia", "Battle of Mantinea"],
     blurb: "Theban commander whose oblique tactics shattered Spartan dominance in Greece."
@@ -556,7 +556,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1567,
     died: 1625,
     birth: { name: "Dillenburg", coords: [50.7431, 8.2863] },
-    work: { name: "Nieuwpoort", coords: [51.1297, 2.7486] },
+    work: { name: "The Hague", coords: [52.0705, 4.3007] },
     death: { name: "The Hague", coords: [52.0705, 4.3007] },
     works: ["Siege of Breda", "Battle of Turnhout", "Battle of Nieuwpoort", "Dutch military reforms"],
     blurb: "Maurice fused drill, engineering, and firepower into one of the most influential military systems of the early modern era."
@@ -570,7 +570,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -106,
     died: -48,
     birth: { name: "Picenum", coords: [42.8530, 13.5740] },
-    work: { name: "Pharsalus", coords: [39.3810, 22.9440] },
+    work: { name: "Rome", coords: [41.9028, 12.4964] },
     death: { name: "Pelusium", coords: [31.0410, 32.5490] },
     works: ["War against Sertorius", "Third Mithridatic War", "Suppression of Mediterranean piracy", "Battle of Pharsalus"],
     blurb: "Pompey the Great amassed an extraordinary command portfolio before losing the Roman civil war to Caesar."
@@ -584,7 +584,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -319,
     died: -272,
     birth: { name: "Epirus", coords: [39.1600, 20.9850] },
-    work: { name: "Heraclea", coords: [40.3830, 16.7670] },
+    work: { name: "Ambracia", coords: [39.1602, 20.9852] },
     death: { name: "Argos", coords: [37.6325, 22.7290] },
     works: ["Battle of Heraclea", "Battle of Asculum", "Sicilian campaign"],
     blurb: "The Hellenistic king whose costly victories against Rome gave the world the phrase 'Pyrrhic victory.'"
@@ -598,7 +598,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1786,
     died: 1866,
     birth: { name: "Petersburg", coords: [37.2279, -77.4019] },
-    work: { name: "Veracruz", coords: [19.1738, -96.1342] },
+    work: { name: "Washington", coords: [38.9072, -77.0369] },
     death: { name: "West Point", coords: [41.3910, -73.9550] },
     works: ["Niagara campaign", "Capture of Veracruz", "Battle of Cerro Gordo", "Mexico City campaign"],
     blurb: "Old Fuss and Feathers led the most successful U.S. campaign of the nineteenth century in Mexico."
@@ -612,7 +612,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1831,
     died: 1890,
     birth: { name: "Grand River", coords: [45.5360, -100.4270] },
-    work: { name: "Little Bighorn", coords: [45.5653, -107.4259] },
+    work: { name: "Standing Rock", coords: [46.0861, -100.631] },
     death: { name: "Fort Yates", coords: [46.0861, -100.6310] },
     works: ["Red Cloud's War", "Great Sioux War", "Battle of the Little Bighorn", "Reservation resistance"],
     blurb: "Hunkpapa Lakota leader whose prestige and resistance helped unite Plains peoples against U.S. expansion."
@@ -626,7 +626,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -111,
     died: -71,
     birth: { name: "Thrace", coords: [41.5667, 23.2833] },
-    work: { name: "Mount Vesuvius", coords: [40.8224, 14.4289] },
+    work: { name: "Capua", coords: [41.082, 14.212] },
     death: { name: "Silarus River", coords: [40.5660, 15.1890] },
     works: ["Escape from Capua", "Battle of Mount Vesuvius", "Slave War in southern Italy", "Final battle against Crassus"],
     blurb: "Leader of the Third Servile War, Spartacus nearly turned a slave uprising into a strategic crisis for Rome."
@@ -640,7 +640,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1559,
     died: 1632,
     birth: { name: "Tilly-sur-Seulles", coords: [49.1760, -0.6290] },
-    work: { name: "Breitenfeld", coords: [51.3920, 12.3730] },
+    work: { name: "Munich", coords: [48.1351, 11.582] },
     death: { name: "Ingolstadt", coords: [48.7651, 11.4237] },
     works: ["White Mountain campaign", "Battle of Wimpfen", "Sack of Magdeburg", "Battle of Breitenfeld"],
     blurb: "Count Tilly commanded the Catholic League through the first major phase of the Thirty Years' War."
@@ -654,26 +654,12 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1583,
     died: 1634,
     birth: { name: "Heřmanice", coords: [50.6170, 16.1140] },
-    work: { name: "Lützen", coords: [51.2600, 12.1320] },
+    work: { name: "Prague", coords: [50.0755, 14.4378] },
     death: { name: "Cheb", coords: [50.0795, 12.3739] },
     works: ["Danish campaign", "Battle of Dessau Bridge", "Alte Veste campaign", "Battle of Lützen"],
     blurb: "Wallenstein raised and led the emperor's largest armies, turning private military entrepreneurship into grand strategy."
   },
-  {
-    name: "Alexander The Great",
-    type: "General",
-    civ: "Greece/Macedon",
-    country: "Greece/Iraq",
-    era: "Classical",
-    born: -356,
-    died: -323,
-    birth: { name: "Pella", coords: [40.7596, 22.5242] },
-    work: { name: "Gaugamela", coords: [36.3650, 43.2500] },
-    death: { name: "Babylon", coords: [32.5422, 44.4200] },
-    works: ["Battle of Granicus", "Battle of Issus", "Siege of Tyre", "Battle of Gaugamela"],
-    blurb: "Alexander conquered the Persian Empire in little more than a decade and became the model of heroic kingship."
-  },
-  {
+{
     name: "Julius Caesar",
     type: "General",
     civ: "Rome",
@@ -682,7 +668,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -100,
     died: -44,
     birth: { name: "Rome", coords: [41.9028, 12.4964] },
-    work: { name: "Alesia", coords: [47.5370, 4.4861] },
+    work: { name: "Rome", coords: [41.9028, 12.4964] },
     death: { name: "Rome", coords: [41.9028, 12.4964] },
     works: ["Gallic Wars", "Battle of Alesia", "Crossing of the Rubicon", "Battle of Pharsalus"],
     blurb: "Caesar paired audacious campaigning with political ambition, ending the Roman Republic's old order."
@@ -696,65 +682,9 @@ export const PEOPLE_GENERAL: Person[] = [
     born: -247,
     died: -183,
     birth: { name: "Carthage", coords: [36.8529, 10.3230] },
-    work: { name: "Cannae", coords: [41.3040, 16.0680] },
+    work: { name: "Carthage", coords: [36.8529, 10.323] },
     death: { name: "Libyssa", coords: [40.7900, 29.4300] },
     works: ["Crossing of the Alps", "Battle of Trebia", "Battle of Lake Trasimene", "Battle of Cannae"],
     blurb: "The great enemy of Rome, Hannibal remains the classic master of annihilation battle and strategic endurance."
   },
-  {
-    name: "Napoleon Bonaparte",
-    type: "General",
-    civ: "France",
-    country: "France/Czech Republic/Saint Helena",
-    era: "Industrial",
-    born: 1769,
-    died: 1821,
-    birth: { name: "Ajaccio", coords: [41.9192, 8.7386] },
-    work: { name: "Austerlitz", coords: [49.1410, 16.7630] },
-    death: { name: "Longwood", coords: [-15.9650, -5.7080] },
-    works: ["Italian campaign", "Battle of Austerlitz", "Jena campaign", "Battle of Borodino"],
-    blurb: "Napoleon fused mass conscription, speed, and operational concentration into Europe's dominant war machine."
-  },
-  {
-    name: "Genghis Khan",
-    type: "General",
-    civ: "Mongolia",
-    country: "Mongolia/China",
-    era: "Medieval",
-    born: 1162,
-    died: 1227,
-    birth: { name: "Delüün Boldog", coords: [48.5167, 111.1167] },
-    work: { name: "Karakorum region", coords: [47.1970, 102.8410] },
-    death: { name: "Yinchuan region", coords: [38.4872, 106.2309] },
-    works: ["Unification of the Mongols", "Jin campaigns", "Khwarezmian campaign", "Western Xia campaign"],
-    blurb: "Temüjin united the steppe and launched the conquests that created the largest contiguous empire in history."
-  },
-  {
-    name: "Saladin",
-    type: "General",
-    civ: "Arabia",
-    country: "Iraq/Syria/Israel/Palestine",
-    era: "Medieval",
-    born: 1137,
-    died: 1193,
-    birth: { name: "Tikrit", coords: [34.6074, 43.6782] },
-    work: { name: "Jerusalem", coords: [31.7683, 35.2137] },
-    death: { name: "Damascus", coords: [33.5138, 36.2765] },
-    works: ["Battle of Montgisard", "Battle of Hattin", "Siege of Jerusalem", "Third Crusade campaign"],
-    blurb: "Saladin reunited Egypt and Syria, crushed the crusader field army at Hattin, and retook Jerusalem."
-  },
-  {
-    name: "George Washington",
-    type: "General",
-    civ: "America",
-    country: "United States",
-    era: "Industrial",
-    born: 1732,
-    died: 1799,
-    birth: { name: "Pope's Creek", coords: [38.1923, -76.9316] },
-    work: { name: "Yorktown", coords: [37.2388, -76.5097] },
-    death: { name: "Mount Vernon", coords: [38.7079, -77.0860] },
-    works: ["Boston campaign", "Delaware campaign", "Monmouth campaign", "Yorktown campaign"],
-    blurb: "Washington held the Continental Army together long enough to win independence and then yielded power to republican government."
-  }
 ];

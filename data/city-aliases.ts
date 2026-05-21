@@ -193,6 +193,25 @@ export const CITY_ALIASES: Record<string, string> = {
   "tenochtitlan":         "Mexico City",
   "tenochtitlán":         "Mexico City",
   "ciudad de méxico":     "Mexico City",
+  "coyoacan":             "Mexico City",   // alcaldía of CDMX (Frida Kahlo)
+  "coyoacán":             "Mexico City",
+  "tlatelolco":           "Mexico City",
+  "xochimilco":           "Mexico City",
+  // Boston: merge Medford (immediate suburb). Cambridge MA stays separate —
+  // it has its own intellectual identity the way Berkeley/Palo Alto do vs SF.
+  "medford":              "Boston",
+  "medford, ma":          "Boston",
+  "somerville":           "Boston",
+  "brookline":            "Boston",
+  // Washington DC: normalize name forms
+  "washington":           "Washington, D.C.",
+  "washington dc":        "Washington, D.C.",
+  "washington, dc":       "Washington, D.C.",
+  // Lyon
+  "oullins":              "Lyon",
+  "villeurbanne":         "Lyon",
+  // Frankfurt — both names point to the same city
+  "frankfurt am main":    "Frankfurt",
   "new amsterdam":        "New York City",
   "new york":             "New York City",
   "nyc":                  "New York City",

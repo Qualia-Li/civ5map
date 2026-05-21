@@ -94,7 +94,7 @@ export const PEOPLE_ENGINEER: Person[] = [
     born: 1452,
     died: 1519,
     birth: { name: 'Vinci', coords: [43.7833, 10.9167] },
-    work: { name: 'Milan', coords: [45.4642, 9.19] },
+    work: { name: "Florence", coords: [43.7696, 11.2558] },
     death: { name: 'Amboise', coords: [47.4136, 0.981] },
     works: ['Canal and hydraulic studies', 'Flying machine designs', 'Armored vehicle concept', 'Milanese engineering notebooks'],
     blurb: 'Renaissance master whose notebooks fused art and engineering into designs for machines, fortifications, hydraulics, and flight.',
