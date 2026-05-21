@@ -75,6 +75,7 @@ export default function Page() {
   const [civQuery, setCivQuery] = useState("");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Person | null>(null);
+  const [cluster, setCluster] = useState<{ people: Person[]; x: number; y: number; place: string } | null>(null);
 
   const civs = useMemo(() => {
     const s = new Set<string>();
@@ -216,7 +217,44 @@ export default function Page() {
       </aside>
 
       <main className="map-wrap">
-        <WorldMap people={filtered} selected={selected} onSelect={setSelected} />
+        <WorldMap people={filtered} selected={selected}
+          onSelect={(p) => { setSelected(p); setCluster(null); }}
+          onClusterClick={(people, anchor, place) =>
+            setCluster({ people, x: anchor.x, y: anchor.y, place })} />
+
+        {cluster && (
+          <div
+            style={{
+              position: "fixed", left: cluster.x + 8, top: cluster.y + 8,
+              zIndex: 50, minWidth: 220, maxHeight: 360, overflowY: "auto",
+              background: "rgba(15,20,25,0.97)", border: "1px solid #324155",
+              borderRadius: 8, padding: "8px 10px", boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
+              fontSize: 13,
+            }}
+            onMouseLeave={() => setCluster(null)}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+              <span style={{ color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.08 + "em" }}>
+                {cluster.people.length} at {cluster.place}
+              </span>
+              <span onClick={() => setCluster(null)}
+                style={{ cursor: "pointer", color: "var(--muted)", fontSize: 11 }}>close ×</span>
+            </div>
+            {cluster.people.map((p) => (
+              <div key={`${p.type}:${p.name}`}
+                onClick={() => { setSelected(p); setCluster(null); }}
+                style={{ padding: "5px 6px", borderRadius: 4, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 8,
+                  background: selected?.name === p.name ? "var(--panel-2)" : "transparent" }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: TYPE_COLORS[p.type] }} />
+                <span>{p.name}</span>
+                <span style={{ color: "var(--muted)", fontSize: 11, marginLeft: "auto" }}>
+                  {fmtYear(p.born)} · {p.type}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="legend">
           <div>Markers — colored by Great Person type</div>

@@ -7,9 +7,11 @@ import {
 import type { Person, GPType } from "../data/people-types";
 
 const WORLD_TOPO = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
-// Natural Earth admin-1 (states / provinces / prefectures). ~1.5 MB, lazy-loaded once.
+// Natural Earth 50m admin-1 — only covers the world's largest countries
+// (China, India, Russia, USA, Canada, Brazil, Australia, Indonesia, South Africa).
+// Smaller countries don't get state lines at 50m; using 10m would be 40 MB.
 const ADMIN1_GEOJSON =
-  "https://cdn.jsdelivr.net/gh/martynafford/natural-earth-geojson@master/50m/cultural/ne_50m_admin_1_states_provinces_lakes.json";
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces_lakes.geojson";
 
 const TYPE_COLORS: Record<GPType, string> = {
   Scientist: "#5fbcd3",
@@ -42,12 +44,16 @@ interface Props {
   people: Person[];
   selected: Person | null;
   onSelect: (p: Person) => void;
+  /** Called when a click lands on a coord shared by >1 person. */
+  onClusterClick?: (candidates: Person[], anchor: { x: number; y: number }, placeLabel: string) => void;
 }
+
+const coordKey = (c: [number, number]) => `${c[0].toFixed(2)},${c[1].toFixed(2)}`;
 
 // our data is [lat, lng]; react-simple-maps expects [lng, lat]
 const toLngLat = (c: [number, number]): [number, number] => [c[1], c[0]];
 
-export default function Map({ people, selected, onSelect }: Props) {
+export default function Map({ people, selected, onSelect, onClusterClick }: Props) {
   const [proj, setProj] = useState<ProjName>("geoNaturalEarth1");
   const [center, setCenter] = useState<[number, number]>([10, 20]);
   const [zoom, setZoom] = useState(1);
@@ -131,7 +137,8 @@ export default function Map({ people, selected, onSelect }: Props) {
         <Graticule stroke="#1e2a3a" strokeWidth={0.4} />
 
         {proj === "geoOrthographic" ? (
-          <MapContents people={people} selected={selected} onSelect={onSelect} zoom={1} />
+          <MapContents people={people} selected={selected} onSelect={onSelect}
+            onClusterClick={onClusterClick} zoom={1} />
         ) : (
           <ZoomableGroup
             center={center}
@@ -144,7 +151,8 @@ export default function Map({ people, selected, onSelect }: Props) {
             maxZoom={64}
             translateExtent={[[-200, -200], [1400, 900]]}
           >
-            <MapContents people={people} selected={selected} onSelect={onSelect} zoom={zoom} />
+            <MapContents people={people} selected={selected} onSelect={onSelect}
+              onClusterClick={onClusterClick} zoom={zoom} />
           </ZoomableGroup>
         )}
       </ComposableMap>
@@ -160,11 +168,37 @@ export default function Map({ people, selected, onSelect }: Props) {
   );
 }
 
-function MapContents({ people, selected, onSelect, zoom }: Props & { zoom: number }) {
+function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props & { zoom: number }) {
   // Counter-scale so markers/lines stay screen-sized as the map zooms in.
   const k = 1 / Math.max(0.5, zoom);
   // Only fetch + render subdivisions once we're zoomed past the world view.
   const showAdmin1 = zoom >= 2.2;
+
+  // Group people by coord so a click on a shared spot (e.g. Luoyang) can
+  // resolve to a list instead of an arbitrary single person.
+  const buckets = React.useMemo(() => {
+    const m = new globalThis.Map<string, { coords: [number, number]; placeLabel: string; people: Person[] }>();
+    const add = (place: { name: string; coords: [number, number] } | undefined, p: Person) => {
+      if (!place) return;
+      const key = coordKey(place.coords);
+      if (!m.has(key)) m.set(key, { coords: place.coords, placeLabel: place.name, people: [] });
+      const b = m.get(key)!;
+      if (!b.people.includes(p)) b.people.push(p);
+    };
+    for (const p of people) { add(p.birth, p); add(p.work, p); add(p.death, p); }
+    return m;
+  }, [people]);
+
+  const handleClick = (place: { name: string; coords: [number, number] }, p: Person, ev: React.MouseEvent) => {
+    const bucket = buckets.get(coordKey(place.coords));
+    const list = bucket ? bucket.people : [p];
+    if (list.length > 1 && onClusterClick) {
+      onClusterClick(list, { x: ev.clientX, y: ev.clientY }, place.name);
+    } else {
+      onSelect(p);
+    }
+  };
+
   return (
     <>
       <Geographies geography={WORLD_TOPO}>
@@ -229,14 +263,16 @@ function MapContents({ people, selected, onSelect, zoom }: Props & { zoom: numbe
         return (
           <React.Fragment key={`${p.type}:${p.name}`}>
             {p.birth && (
-              <Marker coordinates={toLngLat(p.birth.coords)} onClick={() => onSelect(p)}>
+              <Marker coordinates={toLngLat(p.birth.coords)}
+                onClick={(ev: any) => handleClick(p.birth!, p, ev)}>
                 <circle r={(isSel ? 5 : 3.2) * k} fill="none" stroke={color}
                   strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
                 <title>{p.name} — born {p.birth.name}</title>
               </Marker>
             )}
             {p.work && (
-              <Marker coordinates={toLngLat(p.work.coords)} onClick={() => onSelect(p)}>
+              <Marker coordinates={toLngLat(p.work.coords)}
+                onClick={(ev: any) => handleClick(p.work!, p, ev)}>
                 <circle r={(isSel ? 5.5 : 3.5) * k} fill={color} fillOpacity={0.9}
                   stroke={isSel ? "#fff" : "none"} strokeWidth={(isSel ? 1 : 0) * k}
                   style={{ cursor: "pointer" }} />
@@ -244,7 +280,8 @@ function MapContents({ people, selected, onSelect, zoom }: Props & { zoom: numbe
               </Marker>
             )}
             {p.death && (
-              <Marker coordinates={toLngLat(p.death.coords)} onClick={() => onSelect(p)}>
+              <Marker coordinates={toLngLat(p.death.coords)}
+                onClick={(ev: any) => handleClick(p.death!, p, ev)}>
                 <circle r={(isSel ? 4.5 : 2.8) * k} fill="#0a1118" stroke={color}
                   strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
                 <title>{p.name} — died {p.death.name}</title>
