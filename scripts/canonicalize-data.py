@@ -52,6 +52,17 @@ ALIASES = {
     # Americas
     "tenochtitlan":"Mexico City","tenochtitlán":"Mexico City",
     "ciudad de méxico":"Mexico City","new amsterdam":"New York City",
+    "new york":"New York City","nyc":"New York City",
+    "manhattan":"New York City","brooklyn":"New York City",
+    "queens":"New York City","bronx":"New York City","the bronx":"New York City",
+    "staten island":"New York City","greenwich village":"New York City",
+    "harlem":"New York City","murray hill":"New York City",
+    # Greater London / Paris
+    "westminster":"London","kensington":"London","highgate":"London",
+    "hampstead":"London","chelsea":"London","southwark":"London",
+    "lambeth":"London","greenwich":"London",
+    "neuilly-sur-seine":"Paris","saint-denis":"Paris","passy":"Paris",
+    "montmartre":"Paris","arcueil":"Paris",
 }
 
 PAREN_RX = re.compile(r"\s*\([^)]*\)\s*$")

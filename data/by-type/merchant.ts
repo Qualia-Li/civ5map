@@ -318,9 +318,9 @@ export const PEOPLE_MERCHANT: Person[] = [
     era: 'Industrial',
     born: 1794,
     died: 1877,
-    birth: { name: 'Staten Island', coords: [40.5795, -74.1502] },
+    birth: { name: 'New York City', coords: [40.5795, -74.1502] },
     work: { name: 'New York City', coords: [40.7128, -74.0060] },
-    death: { name: 'Manhattan', coords: [40.7831, -73.9712] },
+    death: { name: 'New York City', coords: [40.7831, -73.9712] },
     works: ['Staten Island ferry business', 'Accessory Transit Company', 'New York Central Railroad'],
     blurb: 'The Commodore parlayed steamship profits into one of America’s first great railroad fortunes.'
   },

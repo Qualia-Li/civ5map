@@ -389,7 +389,7 @@ export const PEOPLE_GENERAL: Person[] = [
     died: 1658,
     birth: { name: "Huntingdon", coords: [52.3305, -0.1865] },
     work: { name: "Marston Moor", coords: [53.9630, -1.1720] },
-    death: { name: "Westminster", coords: [51.4995, -0.1248] },
+    death: { name: "London", coords: [51.4995, -0.1248] },
     works: ["Battle of Marston Moor", "Battle of Naseby", "Irish campaign", "Scottish campaign"],
     blurb: "Oliver Cromwell built the New Model Army into the decisive instrument of parliamentary victory."
   },
