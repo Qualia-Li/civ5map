@@ -1,14 +1,9 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ComposableMap, Geographies, Geography, ZoomableGroup, Marker, Line, Sphere, Graticule,
 } from "react-simple-maps";
-import {
-  geoNaturalEarth1, geoEqualEarth, geoMercator, geoOrthographic,
-  geoAzimuthalEqualArea,
-  GeoProjection,
-} from "d3-geo";
 import type { Person, GPType } from "../data/people-types";
 
 const WORLD_TOPO = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -25,14 +20,19 @@ const TYPE_COLORS: Record<GPType, string> = {
   Prophet:   "#f9e79f",
 };
 
-type ProjName = "naturalEarth" | "equalEarth" | "robinson" | "mercator" | "orthographic";
+type ProjName =
+  | "geoNaturalEarth1"
+  | "geoEqualEarth"
+  | "geoAzimuthalEqualArea"
+  | "geoMercator"
+  | "geoOrthographic";
 
-const PROJECTIONS: { value: ProjName; label: string; build: () => GeoProjection }[] = [
-  { value: "naturalEarth", label: "Natural Earth", build: geoNaturalEarth1 },
-  { value: "equalEarth",   label: "Equal Earth",   build: geoEqualEarth },
-  { value: "robinson",     label: "Azimuthal",     build: geoAzimuthalEqualArea },
-  { value: "orthographic", label: "Globe",         build: geoOrthographic },
-  { value: "mercator",     label: "Mercator",      build: geoMercator },
+const PROJECTIONS: { value: ProjName; label: string }[] = [
+  { value: "geoNaturalEarth1",       label: "Natural Earth" },
+  { value: "geoEqualEarth",          label: "Equal Earth" },
+  { value: "geoAzimuthalEqualArea",  label: "Azimuthal" },
+  { value: "geoOrthographic",        label: "Globe" },
+  { value: "geoMercator",            label: "Mercator" },
 ];
 
 interface Props {
@@ -41,14 +41,13 @@ interface Props {
   onSelect: (p: Person) => void;
 }
 
-// react-simple-maps expects [lng, lat]; our data is [lat, lng].
+// our data is [lat, lng]; react-simple-maps expects [lng, lat]
 const toLngLat = (c: [number, number]): [number, number] => [c[1], c[0]];
 
 export default function Map({ people, selected, onSelect }: Props) {
-  const [proj, setProj] = useState<ProjName>("naturalEarth");
+  const [proj, setProj] = useState<ProjName>("geoNaturalEarth1");
   const [center, setCenter] = useState<[number, number]>([10, 20]);
   const [zoom, setZoom] = useState(1);
-  // Orthographic spin
   const [rotate, setRotate] = useState<[number, number, number]>([-10, -20, 0]);
   const dragRef = useRef<{ x: number; y: number; r0: [number, number, number] } | null>(null);
 
@@ -61,20 +60,18 @@ export default function Map({ people, selected, onSelect }: Props) {
     if (pts.length === 0) return;
     const lng = pts.reduce((s, p) => s + p[0], 0) / pts.length;
     const lat = pts.reduce((s, p) => s + p[1], 0) / pts.length;
-    setCenter([lng, lat]);
-    setZoom(2.4);
-    if (proj === "orthographic") setRotate([-lng, -lat, 0]);
+    if (proj === "geoOrthographic") {
+      setRotate([-lng, -lat, 0]);
+    } else {
+      setCenter([lng, lat]);
+      setZoom(2.4);
+    }
   }, [selected, proj]);
 
-  const projConf = useMemo(() => {
-    if (proj === "orthographic") {
-      return { rotate, scale: 220 } as any;
-    }
-    return undefined;
-  }, [proj, rotate]);
-
-  const projComponent = PROJECTIONS.find((p) => p.value === proj)!.build;
-  // react-simple-maps accepts a string id for built-in projections; we pass the d3 function.
+  const projectionConfig: any =
+    proj === "geoOrthographic" ? { rotate, scale: 220 } :
+    proj === "geoMercator"     ? { scale: 130 } :
+    { scale: 160 };
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#0a1118" }}>
@@ -99,13 +96,14 @@ export default function Map({ people, selected, onSelect }: Props) {
       </div>
 
       <ComposableMap
-        projection={projComponent as any}
-        projectionConfig={projConf}
+        key={proj}
+        projection={proj}
+        projectionConfig={projectionConfig}
         width={1200}
         height={700}
         style={{ width: "100%", height: "100%", background: "#0a1118" }}
         onMouseDown={(e: React.MouseEvent) => {
-          if (proj !== "orthographic") return;
+          if (proj !== "geoOrthographic") return;
           dragRef.current = { x: e.clientX, y: e.clientY, r0: rotate };
         }}
         onMouseMove={(e: React.MouseEvent) => {
@@ -119,104 +117,26 @@ export default function Map({ people, selected, onSelect }: Props) {
       >
         <Sphere id="sphere" stroke="#324155" strokeWidth={0.5} fill="#0e1620" />
         <Graticule stroke="#1e2a3a" strokeWidth={0.4} />
-        <ZoomableGroup
-          center={center}
-          zoom={proj === "orthographic" ? 1 : zoom}
-          onMoveEnd={({ coordinates, zoom: z }) => {
-            if (proj !== "orthographic") {
+
+        {proj === "geoOrthographic" ? (
+          <MapContents people={people} selected={selected} onSelect={onSelect} />
+        ) : (
+          <ZoomableGroup
+            center={center}
+            zoom={zoom}
+            onMoveEnd={({ coordinates, zoom: z }) => {
               setCenter(coordinates as [number, number]);
               setZoom(z);
-            }
-          }}
-          minZoom={0.8}
-          maxZoom={6}
-        >
-          <Geographies geography={WORLD_TOPO}>
-            {({ geographies }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill="#1b232e"
-                  stroke="#324155"
-                  strokeWidth={0.4}
-                  style={{
-                    default: { outline: "none" },
-                    hover:   { fill: "#243042", outline: "none" },
-                    pressed: { outline: "none" },
-                  }}
-                />
-              ))
-            }
-          </Geographies>
-
-          {/* Life-path lines for the selected person */}
-          {selected && selected.birth && selected.work && (
-            <Line
-              from={toLngLat(selected.birth.coords)}
-              to={toLngLat(selected.work.coords)}
-              stroke={TYPE_COLORS[selected.type]}
-              strokeWidth={1.5}
-              strokeDasharray="3 4"
-              strokeLinecap="round"
-            />
-          )}
-          {selected && selected.work && selected.death && (
-            <Line
-              from={toLngLat(selected.work.coords)}
-              to={toLngLat(selected.death.coords)}
-              stroke={TYPE_COLORS[selected.type]}
-              strokeWidth={1.5}
-              strokeDasharray="3 4"
-              strokeLinecap="round"
-            />
-          )}
-          {selected && !selected.work && selected.birth && selected.death && (
-            <Line
-              from={toLngLat(selected.birth.coords)}
-              to={toLngLat(selected.death.coords)}
-              stroke={TYPE_COLORS[selected.type]}
-              strokeWidth={1.5}
-              strokeDasharray="3 4"
-              strokeLinecap="round"
-            />
-          )}
-
-          {/* Markers */}
-          {people.map((p) => {
-            const color = TYPE_COLORS[p.type];
-            const isSel = selected?.name === p.name;
-            return (
-              <React.Fragment key={`${p.type}:${p.name}`}>
-                {p.birth && (
-                  <Marker coordinates={toLngLat(p.birth.coords)} onClick={() => onSelect(p)}>
-                    <circle r={isSel ? 5 : 3.2} fill="none" stroke={color}
-                      strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
-                    <title>{p.name} — born {p.birth.name}</title>
-                  </Marker>
-                )}
-                {p.work && (
-                  <Marker coordinates={toLngLat(p.work.coords)} onClick={() => onSelect(p)}>
-                    <circle r={isSel ? 5.5 : 3.5} fill={color} fillOpacity={0.9}
-                      stroke={isSel ? "#fff" : "none"} strokeWidth={isSel ? 1 : 0}
-                      style={{ cursor: "pointer" }} />
-                    <title>{p.name} — {p.work.name}</title>
-                  </Marker>
-                )}
-                {p.death && (
-                  <Marker coordinates={toLngLat(p.death.coords)} onClick={() => onSelect(p)}>
-                    <circle r={isSel ? 4.5 : 2.8} fill="#0a1118" stroke={color}
-                      strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
-                    <title>{p.name} — died {p.death.name}</title>
-                  </Marker>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </ZoomableGroup>
+            }}
+            minZoom={0.8}
+            maxZoom={6}
+          >
+            <MapContents people={people} selected={selected} onSelect={onSelect} />
+          </ZoomableGroup>
+        )}
       </ComposableMap>
 
-      {proj === "orthographic" && (
+      {proj === "geoOrthographic" && (
         <div style={{
           position: "absolute", bottom: 60, left: 14, fontSize: 11,
           color: "#9aa9bc", background: "rgba(15,20,25,0.85)",
@@ -224,5 +144,74 @@ export default function Map({ people, selected, onSelect }: Props) {
         }}>Drag the globe to rotate</div>
       )}
     </div>
+  );
+}
+
+function MapContents({ people, selected, onSelect }: Props) {
+  return (
+    <>
+      <Geographies geography={WORLD_TOPO}>
+        {({ geographies }) =>
+          geographies.map((geo) => (
+            <Geography
+              key={geo.rsmKey}
+              geography={geo}
+              fill="#1b232e"
+              stroke="#324155"
+              strokeWidth={0.4}
+              style={{
+                default: { outline: "none" },
+                hover:   { fill: "#243042", outline: "none" },
+                pressed: { outline: "none" },
+              }}
+            />
+          ))
+        }
+      </Geographies>
+
+      {selected && selected.birth && selected.work && (
+        <Line from={toLngLat(selected.birth.coords)} to={toLngLat(selected.work.coords)}
+          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5} strokeDasharray="3 4" />
+      )}
+      {selected && selected.work && selected.death && (
+        <Line from={toLngLat(selected.work.coords)} to={toLngLat(selected.death.coords)}
+          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5} strokeDasharray="3 4" />
+      )}
+      {selected && !selected.work && selected.birth && selected.death && (
+        <Line from={toLngLat(selected.birth.coords)} to={toLngLat(selected.death.coords)}
+          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5} strokeDasharray="3 4" />
+      )}
+
+      {people.map((p) => {
+        const color = TYPE_COLORS[p.type];
+        const isSel = selected?.name === p.name;
+        return (
+          <React.Fragment key={`${p.type}:${p.name}`}>
+            {p.birth && (
+              <Marker coordinates={toLngLat(p.birth.coords)} onClick={() => onSelect(p)}>
+                <circle r={isSel ? 5 : 3.2} fill="none" stroke={color}
+                  strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
+                <title>{p.name} — born {p.birth.name}</title>
+              </Marker>
+            )}
+            {p.work && (
+              <Marker coordinates={toLngLat(p.work.coords)} onClick={() => onSelect(p)}>
+                <circle r={isSel ? 5.5 : 3.5} fill={color} fillOpacity={0.9}
+                  stroke={isSel ? "#fff" : "none"} strokeWidth={isSel ? 1 : 0}
+                  style={{ cursor: "pointer" }} />
+                <title>{p.name} — {p.work.name}</title>
+              </Marker>
+            )}
+            {p.death && (
+              <Marker coordinates={toLngLat(p.death.coords)} onClick={() => onSelect(p)}>
+                <circle r={isSel ? 4.5 : 2.8} fill="#0a1118" stroke={color}
+                  strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
+                <title>{p.name} — died {p.death.name}</title>
+              </Marker>
+            )}
+          </React.Fragment>
+        );
+      })}
+    </>
   );
 }
