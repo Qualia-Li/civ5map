@@ -192,7 +192,7 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
   const handleClick = (place: { name: string; coords: [number, number] }, p: Person, ev: React.MouseEvent) => {
     const bucket = buckets.get(coordKey(place.coords));
     const list = bucket ? bucket.people : [p];
-    if (list.length > 1 && onClusterClick) {
+    if (onClusterClick) {
       onClusterClick(list, { x: ev.clientX, y: ev.clientY }, place.name);
     } else {
       onSelect(p);
