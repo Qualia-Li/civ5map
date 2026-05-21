@@ -16,9 +16,14 @@ import re
 
 PATH = "data/by-type/general.ts"
 
-# Generals to delete entirely — they're Civ V civ leaders, not GG names.
+# Generals to delete entirely. Two categories of mistaken add:
+# - Civ V civilization leaders (game deliberately excludes them from the GG pool):
+#     Alexander, Napoleon, Genghis Khan, Saladin, George Washington
+# - Famous historical generals NOT in the published Civ V Great General list:
+#     Julius Caesar, Hannibal Barca (Hamilcar Barca, the father, IS in the list)
 DELETE = {"Alexander The Great", "Napoleon Bonaparte", "Genghis Khan",
-          "Saladin", "George Washington"}
+          "Saladin", "George Washington",
+          "Julius Caesar", "Hannibal Barca"}
 
 # (name) -> new (work_name, [lat, lng])
 WORK_FIX = {

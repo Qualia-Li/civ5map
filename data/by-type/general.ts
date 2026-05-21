@@ -659,32 +659,4 @@ export const PEOPLE_GENERAL: Person[] = [
     works: ["Danish campaign", "Battle of Dessau Bridge", "Alte Veste campaign", "Battle of Lützen"],
     blurb: "Wallenstein raised and led the emperor's largest armies, turning private military entrepreneurship into grand strategy."
   },
-{
-    name: "Julius Caesar",
-    type: "General",
-    civ: "Rome",
-    country: "Italy/France",
-    era: "Classical",
-    born: -100,
-    died: -44,
-    birth: { name: "Rome", coords: [41.9028, 12.4964] },
-    work: { name: "Rome", coords: [41.9028, 12.4964] },
-    death: { name: "Rome", coords: [41.9028, 12.4964] },
-    works: ["Gallic Wars", "Battle of Alesia", "Crossing of the Rubicon", "Battle of Pharsalus"],
-    blurb: "Caesar paired audacious campaigning with political ambition, ending the Roman Republic's old order."
-  },
-  {
-    name: "Hannibal Barca",
-    type: "General",
-    civ: "Carthage",
-    country: "Tunisia/Italy/Türkiye",
-    era: "Classical",
-    born: -247,
-    died: -183,
-    birth: { name: "Carthage", coords: [36.8529, 10.3230] },
-    work: { name: "Carthage", coords: [36.8529, 10.323] },
-    death: { name: "Libyssa", coords: [40.7900, 29.4300] },
-    works: ["Crossing of the Alps", "Battle of Trebia", "Battle of Lake Trasimene", "Battle of Cannae"],
-    blurb: "The great enemy of Rome, Hannibal remains the classic master of annihilation battle and strategic endurance."
-  },
 ];
