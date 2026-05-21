@@ -63,7 +63,7 @@ export const CITY_ALIASES: Record<string, string> = {
   "shahjahanabad":        "Delhi",
   "kapilavastu":          "Kapilavastu",
   "vaishali":             "Vaishali",
-  "kundagrama":           "Kundagrama",
+  // (kundagrama -> Vaishali — see same-place normalizations below)
   "nalanda":              "Nalanda",
   "rajgir":               "Rajgir",
   "kashi":                "Varanasi",
@@ -249,6 +249,60 @@ export const CITY_ALIASES: Record<string, string> = {
   "east india house":     "London",   // City of London
   "the strand":           "London",   // street in central London
   "kennington":           "London",   // LB of Lambeth
+  // Dublin suburbs (all inside the Dublin Corporation / Dublin city area)
+  "sandymount":           "Dublin",
+  "ballsbridge":           "Dublin",
+  "rathmines":            "Dublin",
+  "ranelagh":             "Dublin",
+  "donnybrook":           "Dublin",
+  "dun laoghaire":        "Dublin",
+  "dún laoghaire":        "Dublin",
+
+  // ---- Birmingham UK ----
+  "handsworth":           "Birmingham",   // Watt's death — Birmingham B20 district
+  "handsworth, birmingham":"Birmingham",
+  "aston":                "Birmingham",
+  "edgbaston":            "Birmingham",
+  "smethwick":            "Birmingham",
+
+  // ---- Stuttgart ----
+  "cannstatt":            "Stuttgart",    // district of Stuttgart since 1905
+  "bad cannstatt":        "Stuttgart",
+
+  // ---- Detroit ----
+  "dearborn":             "Detroit",      // Ford industrial suburb
+  "dearborn, michigan":   "Detroit",
+  "hamtramck":            "Detroit",
+  "highland park":        "Detroit",
+
+  // ---- Seville ----
+  "castilleja de la cuesta": "Seville",   // immediate Seville suburb (Cortés died)
+  "santiponce":           "Seville",
+
+  // ---- Agra ----
+  "agra fort":            "Agra",         // the fort within Agra city
+
+  // ---- Córdoba (Spain) ----
+  "madinat al-zahra":     "Córdoba",      // caliphal palace city ~5km from Córdoba
+
+  // ---- Acre ----
+  "bahji":                "Acre",         // Baha'u'llah shrine on Acre's edge
+  "bahji, acre":          "Acre",
+
+  // ---- Same-place normalizations (different historical names, identical coords) ----
+  "yangdu county":        "Linyi",        // Zhuge Liang's birthplace
+  "yangdu":               "Linyi",
+  "tel abib near nippur": "Nippur",       // Ezekiel exilic site
+  "babylonia near nippur":"Nippur",
+  "derry township":       "Hershey",
+  "fort yates":           "Standing Rock", // same Lakota site
+  "preveza":              "Actium",       // ancient battle site near modern Preveza
+  "epirus":               "Ambracia",     // region vs Pyrrhus's capital
+  "kundagrama":           "Vaishali",     // Mahavira's birth village within Vaishali
+
+  // ---- L'Anse aux Meadows quote-style normalization ----
+  "l'anse aux meadows":   "L'Anse aux Meadows",
+  "l’anse aux meadows":   "L'Anse aux Meadows",
   "leyton":               "London",   // LB of Waltham Forest
   "hampton court":        "London",   // LB of Richmond
   "wapping":              "London",

@@ -207,7 +207,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     born: 1480,
     died: 1521,
     birth: { name: 'Sabrosa', coords: [41.2678, -7.5763] },
-    work: { name: 'Seville', coords: [37.3891, -5.9845] },
+    work: { name: 'Seville', coords: [37.3886, -5.9823] },
     death: { name: 'Mactan', coords: [10.3092, 123.9494] },
     works: ['1519 Armada de Molucca', 'Discovery of the Strait of Magellan route', 'Pacific crossing to the Philippines'],
     blurb: 'His expedition found the western path to the Spice Islands and completed the first circumnavigation after his death.'
@@ -278,7 +278,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     died: 1666,
     birth: { name: 'Lahore', coords: [31.5497, 74.3436] },
     work: { name: 'Agra', coords: [27.1767, 78.0081] },
-    death: { name: 'Agra Fort', coords: [27.1795, 78.0211] },
+    death: { name: 'Agra', coords: [27.1795, 78.0211] },
     works: ['Taj Mahal', 'Red Fort of Delhi', 'Shahjahanabad urban expansion'],
     blurb: 'Mughal emperor whose court magnificence rested on one of the early modern world’s richest commercial states.'
   },
@@ -444,7 +444,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     era: 'Industrial',
     born: 1857,
     died: 1945,
-    birth: { name: 'Derry Township', coords: [40.2859, -76.6502] },
+    birth: { name: 'Hershey', coords: [40.2859, -76.6502] },
     work: { name: 'Hershey', coords: [40.2859, -76.6502] },
     death: { name: 'Hershey', coords: [40.2859, -76.6502] },
     works: ['Lancaster Caramel Company', 'Hershey Chocolate Company', 'Hershey company town'],

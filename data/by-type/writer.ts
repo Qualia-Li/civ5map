@@ -331,7 +331,7 @@ export const PEOPLE_WRITER: Person[] = [
     era: 'Modern',
     born: 1865,
     died: 1939,
-    birth: { name: 'Sandymount', coords: [53.3270, -6.2158] },
+    birth: { name: 'Dublin', coords: [53.3498, -6.2603] },
     work: { name: 'Dublin', coords: [53.3498, -6.2603] },
     death: { name: 'Roquebrune-Cap-Martin', coords: [43.7641, 7.4820] },
     works: ['The Tower', 'The Wild Swans at Coole', 'The Second Coming', 'Sailing to Byzantium'],

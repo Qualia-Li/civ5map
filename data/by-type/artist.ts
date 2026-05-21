@@ -247,7 +247,7 @@ export const PEOPLE_ARTIST: Person[] = [
     era: 'Renaissance',
     born: 1484,
     died: 1566,
-    birth: { name: 'Seville', coords: [37.3891, -5.9845] },
+    birth: { name: 'Seville', coords: [37.3886, -5.9823] },
     work: { name: 'Santo Domingo', coords: [18.4861, -69.9312] },
     death: { name: 'Madrid', coords: [40.4168, -3.7038] },
     works: ['A Short Account of the Destruction of the Indies', 'History of the Indies', 'Apologetic History of the Indies'],

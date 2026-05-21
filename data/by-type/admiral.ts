@@ -262,7 +262,7 @@ export const PEOPLE_ADMIRAL: Person[] = [
     born: 970,
     died: 1020,
     birth: { name: 'Iceland', coords: [64.9631, -19.0208] },
-    work: { name: 'L’Anse aux Meadows', coords: [51.5958, -55.5333] },
+    work: { name: 'L\'Anse aux Meadows', coords: [51.5958, -55.5333] },
     death: { name: 'Brattahlíð', coords: [61.1667, -45.4167] },
     works: ['Voyage to Vinland', 'Voyage to Helluland', 'Voyage to Markland'],
     blurb: 'Norse explorer traditionally credited as the first known European to reach North America.'
@@ -276,7 +276,7 @@ export const PEOPLE_ADMIRAL: Person[] = [
     born: 1478,
     died: 1546,
     birth: { name: 'Lesbos', coords: [39.1078, 26.5547] },
-    work: { name: 'Preveza', coords: [38.95, 20.75] },
+    work: { name: 'Actium', coords: [38.95, 20.75] },
     death: { name: 'Istanbul', coords: [41.0082, 28.9784] },
     works: ['Capture of Tunis', 'Battle of Preveza', 'Raid on the Balearics', 'Ottoman control of Algiers'],
     blurb: 'Ottoman grand admiral and corsair whose victory at Preveza secured decades of Ottoman naval supremacy.'

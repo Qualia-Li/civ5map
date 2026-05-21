@@ -99,6 +99,32 @@ ALIASES = {
     "kennington":"London","leyton":"London","hampton court":"London",
     "wapping":"London","shoreditch":"London","islington":"London",
     "marylebone":"London","soho":"London","bloomsbury":"London",
+    "sandymount":"Dublin","ballsbridge":"Dublin","rathmines":"Dublin",
+    "ranelagh":"Dublin","donnybrook":"Dublin","dun laoghaire":"Dublin",
+    "dún laoghaire":"Dublin",
+    # Birmingham UK
+    "handsworth":"Birmingham","handsworth, birmingham":"Birmingham",
+    "aston":"Birmingham","edgbaston":"Birmingham","smethwick":"Birmingham",
+    # Stuttgart
+    "cannstatt":"Stuttgart","bad cannstatt":"Stuttgart",
+    # Detroit
+    "dearborn":"Detroit","dearborn, michigan":"Detroit",
+    "hamtramck":"Detroit","highland park":"Detroit",
+    # Seville
+    "castilleja de la cuesta":"Seville","santiponce":"Seville",
+    # Misc
+    "agra fort":"Agra",
+    "madinat al-zahra":"Córdoba",
+    "bahji":"Acre","bahji, acre":"Acre",
+    "yangdu county":"Linyi","yangdu":"Linyi",
+    "tel abib near nippur":"Nippur","babylonia near nippur":"Nippur",
+    "derry township":"Hershey",
+    "fort yates":"Standing Rock",
+    "preveza":"Actium",
+    "epirus":"Ambracia",
+    "kundagrama":"Vaishali",
+    "l'anse aux meadows":"L'Anse aux Meadows",
+    "l’anse aux meadows":"L'Anse aux Meadows",
     # Paris suburbs
     "marnes-la-coquette":"Paris","cormeilles-en-parisis":"Paris",
     "bry-sur-marne":"Paris","saint-cloud":"Paris",
@@ -169,6 +195,11 @@ CITY_CENTROIDS = {
     "Milan":           [45.4642,    9.1900],
     "Venice":          [45.4408,   12.3155],
     "Naples":          [40.8518,   14.2681],
+    "Birmingham":      [52.4862,   -1.8904],
+    "Stuttgart":       [48.7758,    9.1829],
+    "Detroit":         [42.3314,  -83.0458],
+    "Seville":         [37.3886,   -5.9823],
+    "Dublin":          [53.3498,   -6.2603],
 }
 
 

@@ -584,7 +584,7 @@ export const PEOPLE_SCIENTIST: Person[] = [
     born: 936,
     died: 1013,
     birth: { name: "Córdoba", coords: [37.8882, -4.7794] },
-    work: { name: "Madinat al-Zahra", coords: [37.8873, -4.8213] },
+    work: { name: "Córdoba", coords: [37.8873, -4.8213] },
     death: { name: "Córdoba", coords: [37.8882, -4.7794] },
     works: ["Al-Tasrif", "Surgical instruments", "Operative surgery"],
     blurb: "Al-Zahrawi's surgical encyclopedia shaped medicine in both the Islamic world and Europe.",

@@ -79,7 +79,7 @@ export const PEOPLE_PROPHET: Person[] = [
     era: 'Ancient',
     born: -599,
     died: -527,
-    birth: { name: 'Kundagrama', coords: [25.9969, 85.1284] },
+    birth: { name: 'Vaishali', coords: [25.9969, 85.1284] },
     work: { name: 'Rajgir', coords: [25.0282, 85.4200] },
     death: { name: 'Pawapuri', coords: [25.0815, 85.5330] },
     works: ['Five Great Vows', 'Ahimsa', 'Anekantavada', 'Jain Sangha'],
@@ -220,8 +220,8 @@ export const PEOPLE_PROPHET: Person[] = [
     born: -622,
     died: -570,
     birth: { name: 'Jerusalem', coords: [31.7683, 35.2137] },
-    work: { name: 'Tel Abib near Nippur', coords: [32.1236, 45.2250] },
-    death: { name: 'Babylonia near Nippur', coords: [32.1236, 45.2250] },
+    work: { name: 'Nippur', coords: [32.1236, 45.2250] },
+    death: { name: 'Nippur', coords: [32.1236, 45.2250] },
     works: ['Book of Ezekiel', 'Merkabah vision', 'Valley of Dry Bones', 'New Temple vision'],
     blurb: 'Exilic Hebrew prophet famed for visionary symbolism and restoration hope.'
   },
@@ -333,7 +333,7 @@ export const PEOPLE_PROPHET: Person[] = [
     died: 1892,
     birth: { name: 'Tehran', coords: [35.6892, 51.389] },
     work: { name: 'Acre', coords: [32.9234, 35.0818] },
-    death: { name: 'Bahji', coords: [32.9496, 35.0925] },
+    death: { name: 'Acre', coords: [32.9496, 35.0925] },
     works: ['Kitab-i-Aqdas', 'Kitab-i-Iqan', 'Hidden Words', 'Seven Valleys'],
     blurb: 'Founder of the Baha\'i Faith, teaching the unity of religions and humanity.'
   },
