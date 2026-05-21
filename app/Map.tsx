@@ -60,6 +60,22 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
   const [rotate, setRotate] = useState<[number, number, number]>([-10, -20, 0]);
   const [globeScale, setGlobeScale] = useState(220);
   const dragRef = useRef<{ x: number; y: number; r0: [number, number, number] } | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  // Non-passive wheel listener so we can preventDefault() and steal scroll
+  // events from page scrolling. React's onWheel is passive by default.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (proj !== "geoOrthographic") return;
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+      setGlobeScale((s) => Math.min(2400, Math.max(140, s * factor)));
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [proj]);
 
   useEffect(() => {
     if (!selected) return;
@@ -93,7 +109,7 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
     { scale: 160 };
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh", background: "#0a1118" }}>
+    <div ref={wrapRef} style={{ position: "relative", width: "100%", height: "100%", background: "#0a1118" }}>
       <div style={{
         position: "absolute", top: 12, left: 12, zIndex: 10,
         background: "rgba(15,20,25,0.92)", border: "1px solid #324155",
@@ -138,14 +154,6 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
         }}
         onMouseUp={() => { dragRef.current = null; }}
         onMouseLeave={() => { dragRef.current = null; }}
-        onWheel={(e: React.WheelEvent) => {
-          if (proj !== "geoOrthographic") return;
-          // Scroll = zoom the globe (no preventDefault — passive listeners on
-          // wheel events can't preventDefault inside React anyway). Scale
-          // controls the globe's apparent radius in projection units.
-          const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
-          setGlobeScale((s) => Math.min(2400, Math.max(140, s * factor)));
-        }}
       >
         {/* Globe view: ocean-fill sphere (so the planet reads as solid, not transparent)
             + graticule. Flat projections: skip — would draw a random rectangle. */}
@@ -158,7 +166,7 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
 
         {proj === "geoOrthographic" ? (
           <MapContents people={people} selected={selected} onSelect={onSelect}
-            onClusterClick={onClusterClick} zoom={1} />
+            onClusterClick={onClusterClick} zoom={1} globeRotate={rotate} />
         ) : (
           <ZoomableGroup
             center={center}
@@ -188,11 +196,30 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
   );
 }
 
-function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props & { zoom: number }) {
+function MapContents({ people, selected, onSelect, onClusterClick, zoom, globeRotate }:
+    Props & { zoom: number; globeRotate?: [number, number, number] }) {
   // Counter-scale so markers/lines stay screen-sized as the map zooms in.
   const k = 1 / Math.max(0.5, zoom);
   // Only fetch + render subdivisions once we're zoomed past the world view.
   const showAdmin1 = zoom >= 2.2;
+
+  // Hemisphere visibility for the orthographic globe. d3-geo's rotate is
+  // [-lng_center, -lat_center, gamma] — so the visible center on the globe
+  // is at (lng = -rotate[0], lat = -rotate[1]). A geographic point is on the
+  // visible hemisphere when the angular distance from the center is < 90°,
+  // i.e. cos(c) > 0 where c is the great-circle angle.
+  const isVisibleOnGlobe = (() => {
+    if (!globeRotate) return () => true;
+    const toRad = Math.PI / 180;
+    const cLng = -globeRotate[0] * toRad;
+    const cLat = -globeRotate[1] * toRad;
+    const cosCLat = Math.cos(cLat), sinCLat = Math.sin(cLat);
+    return (coords: [number, number]) => {
+      const lat = coords[0] * toRad, lng = coords[1] * toRad;
+      const cosC = sinCLat * Math.sin(lat) + cosCLat * Math.cos(lat) * Math.cos(lng - cLng);
+      return cosC > 0;
+    };
+  })();
 
   // Group people by coord so a click on a shared spot (e.g. Luoyang) can
   // resolve to a list instead of an arbitrary single person.
@@ -279,8 +306,9 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
 
       {/* Halo for spots that aggregate multiple people — sized by sqrt(count).
           When multiple Great-Person types share a city, the halo is split
-          into arcs proportional to each type's share at that spot. */}
-      {[...buckets.values()].filter((b) => b.people.length >= 2).map((b) => {
+          into arcs proportional to each type's share at that spot.
+          On the globe, halos on the back hemisphere are hidden. */}
+      {[...buckets.values()].filter((b) => b.people.length >= 2 && isVisibleOnGlobe(b.coords)).map((b) => {
         const counts = new globalThis.Map<GPType, number>();
         for (const p of b.people) counts.set(p.type, (counts.get(p.type) ?? 0) + 1);
         const entries = [...counts.entries()].sort((a, c) => c[1] - a[1]);
@@ -365,6 +393,7 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
               // isn't the currently-selected one — selected people always
               // render so the user can see the focus).
               if (!isSel && haloHere(entry)) return null;
+              if (!isVisibleOnGlobe(entry.coords)) return null;
               entry.stages.sort((a, b) => stageRank[a] - stageRank[b]);
               const primary = entry.stages[0];
               const tip = `${p.name} — ${entry.stages.map((s) =>
