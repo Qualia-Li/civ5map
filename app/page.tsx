@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { ALL_PEOPLE } from "../data";
 import type { Person, GPType, Era } from "../data/people-types";
 
-const Map = dynamic(() => import("./Map"), { ssr: false });
+const WorldMap = dynamic(() => import("./Map"), { ssr: false });
 
 const TYPES: GPType[] = ["Scientist","Engineer","Merchant","Writer","Artist","Musician","General","Admiral","Prophet"];
 const ERAS: Era[] = ["Ancient","Classical","Medieval","Renaissance","Industrial","Modern"];
@@ -22,6 +22,52 @@ function fmtYear(y?: number) {
   return `${y} CE`;
 }
 
+function RankPanel({ title, rows, total, onPick }: {
+  title: string;
+  rows: { key: string; count: number; names: string[] }[];
+  total: number;
+  onPick: (names: string[]) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? rows : rows.slice(0, 8);
+  const max = rows[0]?.count ?? 1;
+  if (rows.length === 0) return null;
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div className="label" style={{ display: "flex", justifyContent: "space-between" }}>
+        <span>{title}</span>
+        <span style={{ textTransform: "none", letterSpacing: 0 }}>{rows.length} · {total} people</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 4 }}>
+        {visible.map((r, i) => (
+          <div key={r.key} onClick={() => onPick(r.names)}
+            style={{ position: "relative", padding: "4px 8px", borderRadius: 4, cursor: "pointer", fontSize: 12.5 }}
+            title={r.names.slice(0, 12).join(", ") + (r.names.length > 12 ? "…" : "")}>
+            <div style={{
+              position: "absolute", inset: 0, borderRadius: 4,
+              background: "var(--panel-2)",
+              width: `${(r.count / max) * 100}%`, opacity: 0.6,
+            }} />
+            <div style={{ position: "relative", display: "flex", justifyContent: "space-between" }}>
+              <span><span style={{ color: "var(--muted)", marginRight: 6 }}>{i + 1}.</span>{r.key}</span>
+              <span style={{ color: "var(--accent)", fontVariantNumeric: "tabular-nums" }}>{r.count}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      {rows.length > 8 && (
+        <button onClick={() => setExpanded(!expanded)}
+          style={{
+            marginTop: 4, fontSize: 11, background: "transparent", color: "var(--accent-2)",
+            border: "none", cursor: "pointer", padding: 4,
+          }}>
+          {expanded ? "Show top 8" : `Show all ${rows.length}`}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function Page() {
   const [activeTypes, setActiveTypes] = useState<Set<GPType>>(new Set(TYPES));
   const [activeEras, setActiveEras] = useState<Set<Era>>(new Set(ERAS));
@@ -35,6 +81,14 @@ export default function Page() {
     return [...s].sort();
   }, []);
 
+  // Normalize a "Italy/France" string into ["Italy","France"]; drop empties.
+  const splitMulti = (s: string) =>
+    s.split(/[\/,;]| and /).map((x) => x.trim()).filter(Boolean);
+
+  // Strip parenthetical qualifiers from a city name (e.g. "Memphis (traditional)" -> "Memphis").
+  const cleanCity = (s: string) =>
+    s.replace(/\s*\([^)]*\)\s*$/, "").trim();
+
   const filtered = useMemo(() => {
     return ALL_PEOPLE.filter((p) => {
       if (!activeTypes.has(p.type)) return false;
@@ -45,6 +99,43 @@ export default function Page() {
       return true;
     });
   }, [activeTypes, activeEras, civQuery, search]);
+
+  // Rankings — respect the current filter set, by modern country and by city.
+  const rankings = useMemo(() => {
+    const country = new Map<string, Set<string>>();
+    const city    = new Map<string, Set<string>>();
+
+    for (const p of filtered) {
+      for (const c of splitMulti(p.country)) {
+        if (!country.has(c)) country.set(c, new Set());
+        country.get(c)!.add(p.name);
+      }
+      const seenCity = new Set<string>();
+      for (const place of [p.birth, p.work, p.death]) {
+        if (!place) continue;
+        const city0 = cleanCity(place.name);
+        // ignore "X (traditional)" duplicates and double-count of same person/city
+        if (seenCity.has(city0)) continue;
+        seenCity.add(city0);
+        if (!city.has(city0)) city.set(city0, new Set());
+        city.get(city0)!.add(p.name);
+      }
+    }
+
+    const toRanked = (m: Map<string, Set<string>>) =>
+      [...m.entries()]
+        .map(([k, v]) => ({ key: k, count: v.size, names: [...v] }))
+        .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key));
+
+    return { country: toRanked(country), city: toRanked(city) };
+  }, [filtered]);
+
+  // Label describing what's being ranked, given current filters
+  const rankLabel = useMemo(() => {
+    if (activeTypes.size === 1) return [...activeTypes][0] + "s";
+    if (activeTypes.size === TYPES.length) return "people";
+    return [...activeTypes].join(" / ");
+  }, [activeTypes]);
 
   const toggle = <T,>(set: Set<T>, setter: (s: Set<T>) => void, value: T) => {
     const next = new Set(set);
@@ -124,7 +215,7 @@ export default function Page() {
       </aside>
 
       <main className="map-wrap">
-        <Map people={filtered} selected={selected} onSelect={setSelected} />
+        <WorldMap people={filtered} selected={selected} onSelect={setSelected} />
 
         <div className="legend">
           <div>Markers — colored by Great Person type</div>
@@ -157,7 +248,7 @@ export default function Page() {
 
       <aside className="detail">
         {!selected && (
-          <div className="empty">Click a marker on the map, a name in the list, or a dot on the timeline to see details — birthplace, where they worked, where they died, and what they made.</div>
+          <div className="empty" style={{ marginBottom: 12 }}>Click a marker, list row, or timeline dot to see details.</div>
         )}
         {selected && (
           <>
@@ -200,6 +291,27 @@ export default function Page() {
             </ul>
           </>
         )}
+
+        <div style={{ height: 1, background: "var(--line)", margin: "18px 0" }} />
+
+        <RankPanel
+          title={`Top countries by ${rankLabel}`}
+          rows={rankings.country}
+          total={filtered.length}
+          onPick={(names) => {
+            const first = filtered.find((p) => names.includes(p.name));
+            if (first) setSelected(first);
+          }}
+        />
+        <RankPanel
+          title={`Top cities by ${rankLabel}`}
+          rows={rankings.city}
+          total={filtered.length}
+          onPick={(names) => {
+            const first = filtered.find((p) => names.includes(p.name));
+            if (first) setSelected(first);
+          }}
+        />
       </aside>
     </div>
   );
