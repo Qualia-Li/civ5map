@@ -9,7 +9,12 @@ from collections import defaultdict, Counter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BY_TYPE_DIR = os.path.join(ROOT, "data", "by-type")
 
-# Mirror data/city-aliases.ts CITY_ALIASES (subset; keys lowercased).
+# MANUALLY MIRRORED from data/city-aliases.ts CITY_ALIASES (subset; keys lowercased).
+# IMPORTANT: this is a hand-maintained subset, NOT a complete clone. The TS file
+# is the source of truth used at runtime; this Python copy only needs entries
+# that you want applied as one-time rewrites to the .ts data files. If a city
+# alias is only here for runtime aggregation (and never appears in the raw
+# data) it doesn't need to be added below.
 ALIASES = {
     # China
     "khanbaliq":"Beijing","dadu":"Beijing","yanjing":"Beijing","beiping":"Beijing",

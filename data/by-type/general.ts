@@ -733,7 +733,7 @@ export const PEOPLE_GENERAL: Person[] = [
     name: "Saladin",
     type: "General",
     civ: "Arabia",
-    country: "Iraq/Syria/Israel-Palestine",
+    country: "Iraq/Syria/Israel/Palestine",
     era: "Medieval",
     born: 1137,
     died: 1193,

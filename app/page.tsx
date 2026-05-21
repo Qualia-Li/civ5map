@@ -17,6 +17,19 @@ const TYPE_COLORS: Record<GPType, string> = {
   General: "#d62828", Admiral: "#1d4ed8", Prophet: "#f9e79f",
 };
 
+// Spread onto a clickable div to make it keyboard-operable: Enter/Space fires the click.
+const clickable = (onActivate: (e: any) => void) => ({
+  role: "button" as const,
+  tabIndex: 0,
+  onClick: onActivate,
+  onKeyDown: (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onActivate(e);
+    }
+  },
+});
+
 function fmtYear(y?: number) {
   if (y === undefined) return "?";
   if (y < 0) return `${-y} BCE`;
@@ -191,8 +204,9 @@ export default function Page() {
               <div key={t}
                 className={`chip type ${activeTypes.has(t) ? "active" : ""}`}
                 data-type={t}
+                aria-pressed={activeTypes.has(t)}
                 title="Click to isolate · shift-click to add/remove"
-                onClick={(e) => isolate(activeTypes, setActiveTypes, TYPES, t, e)}>
+                {...clickable((e) => isolate(activeTypes, setActiveTypes, TYPES, t, e))}>
                 {t}
               </div>
             ))}
@@ -205,8 +219,9 @@ export default function Page() {
             {ERAS.map((e) => (
               <div key={e}
                 className={`chip ${activeEras.has(e) ? "active" : ""}`}
+                aria-pressed={activeEras.has(e)}
                 title="Click to isolate · shift-click to add/remove"
-                onClick={(ev) => isolate(activeEras, setActiveEras, ERAS, e, ev)}>
+                {...clickable((ev) => isolate(activeEras, setActiveEras, ERAS, e, ev))}>
                 {e}
               </div>
             ))}
@@ -234,7 +249,8 @@ export default function Page() {
           {filtered.slice(0, 200).map((p) => (
             <div key={`${p.type}:${p.name}`}
               className={`result ${selected?.name === p.name ? "selected" : ""}`}
-              onClick={() => setSelected(p)}>
+              aria-label={`Show details for ${p.name}`}
+              {...clickable(() => setSelected(p))}>
               <div className="dot" style={{ background: TYPE_COLORS[p.type] }} />
               <div>{p.name} <span style={{ color: "var(--muted)", fontSize: 11 }}>· {p.civ}</span></div>
               <div className="yr">{fmtYear(p.born)}</div>
@@ -252,11 +268,26 @@ export default function Page() {
           onClusterClick={(people, anchor, place) =>
             setCluster({ people, x: anchor.x, y: anchor.y, place })} />
 
-        {cluster && (
+        {cluster && (() => {
+          // Clamp the popup against all four viewport edges. The popup never
+          // renders off-screen even on tiny viewports — its position is capped
+          // to [8, viewport - size - 8] after considering the flip-to-the-other-
+          // side preference for cursors near the right/bottom edge.
+          const vw = typeof window !== "undefined" ? window.innerWidth  : 1600;
+          const vh = typeof window !== "undefined" ? window.innerHeight : 900;
+          // Cap popup size to (viewport - 16) so it always fits, then position.
+          const W = Math.min(260, vw - 16);
+          const H = Math.min(360, vh - 16, 60 + 28 * cluster.people.length);
+          const preferLeft = cluster.x + 8 + W > vw ? cluster.x - W - 8 : cluster.x + 8;
+          const preferTop  = cluster.y + 8 + H > vh ? cluster.y - H - 8 : cluster.y + 8;
+          const left = Math.max(8, Math.min(preferLeft, vw - W - 8));
+          const top  = Math.max(8, Math.min(preferTop,  vh - H - 8));
+          return (
           <div
+            role="dialog" aria-label={`People at ${cluster.place}`}
             style={{
-              position: "fixed", left: cluster.x + 8, top: cluster.y + 8,
-              zIndex: 50, minWidth: 220, maxHeight: 360, overflowY: "auto",
+              position: "fixed", left, top,
+              zIndex: 50, width: W, maxHeight: H, overflowY: "auto",
               background: "rgba(15,20,25,0.97)", border: "1px solid #324155",
               borderRadius: 8, padding: "8px 10px", boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
               fontSize: 13,
@@ -267,12 +298,13 @@ export default function Page() {
               <span style={{ color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.08 + "em" }}>
                 {cluster.people.length} at {canonicalCity(cluster.place)}
               </span>
-              <span onClick={() => setCluster(null)}
-                style={{ cursor: "pointer", color: "var(--muted)", fontSize: 11 }}>close ×</span>
+              <span aria-label="Close" style={{ cursor: "pointer", color: "var(--muted)", fontSize: 11 }}
+                {...clickable(() => setCluster(null))}>close ×</span>
             </div>
             {cluster.people.map((p) => (
               <div key={`${p.type}:${p.name}`}
-                onClick={() => { setSelected(p); setCluster(null); }}
+                aria-label={`Select ${p.name}`}
+                {...clickable(() => { setSelected(p); setCluster(null); })}
                 style={{ padding: "5px 6px", borderRadius: 4, cursor: "pointer",
                   display: "flex", alignItems: "center", gap: 8,
                   background: selected?.name === p.name ? "var(--panel-2)" : "transparent" }}>
@@ -284,7 +316,8 @@ export default function Page() {
               </div>
             ))}
           </div>
-        )}
+          );
+        })()}
 
         <div className="legend">
           <div>Markers — colored by Great Person type</div>
