@@ -98,6 +98,7 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
         position: "absolute", top: 12, left: 12, zIndex: 10,
         background: "rgba(15,20,25,0.92)", border: "1px solid #324155",
         borderRadius: 8, padding: "6px 10px", display: "flex", gap: 6, alignItems: "center",
+        flexWrap: "wrap", maxWidth: "calc(100% - 24px)",
         fontSize: 12, color: "#9aa9bc"
       }}>
         <span>Projection:</span>
