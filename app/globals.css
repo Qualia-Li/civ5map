@@ -71,13 +71,14 @@ h1, h2, h3 { margin: 0; }
 .result .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .result .yr { color: var(--muted); font-size: 11px; margin-left: auto; }
 
-.legend { position: absolute; bottom: 14px; left: 14px; background: rgba(15,20,25,0.92);
-  border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 11px; color: var(--muted); }
+.legend { position: absolute; top: 12px; right: 14px; background: rgba(15,20,25,0.92);
+  border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 11px; color: var(--muted);
+  z-index: 5; }
 .legend .row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 .legend .ring { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #fff; background: transparent; }
 .legend .filled { background: #fff; }
 
-.timeline { position: absolute; bottom: 14px; right: 14px; left: 200px; background: rgba(15,20,25,0.92);
+.timeline { position: absolute; bottom: 14px; right: 14px; left: 14px; background: rgba(15,20,25,0.92);
   border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 11px; color: var(--muted); }
 .timeline-track { position: relative; height: 28px; margin-top: 6px; }
 .timeline-marker { position: absolute; width: 6px; height: 6px; border-radius: 50%; top: 11px; transform: translateX(-3px); }

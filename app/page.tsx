@@ -156,6 +156,25 @@ export default function Page() {
         <h1>Civ V <span>Great People</span> Atlas</h1>
         <div className="sub">{ALL_PEOPLE.length} historical figures from Civilization V's Great Person name pools — grouped by type, era, and civilization.</div>
 
+        {(activeTypes.size !== TYPES.length || activeEras.size !== ERAS.length || civQuery || search || selected) && (
+          <button
+            onClick={() => {
+              setActiveTypes(new Set(TYPES));
+              setActiveEras(new Set(ERAS));
+              setCivQuery("");
+              setSearch("");
+              setSelected(null);
+            }}
+            style={{
+              marginBottom: 14, padding: "6px 10px",
+              background: "transparent", border: "1px solid var(--accent)",
+              color: "var(--accent)", borderRadius: 6, cursor: "pointer",
+              fontSize: 12, width: "100%",
+            }}>
+            ↺ Reset filters &amp; selection
+          </button>
+        )}
+
         <div className="filter-group">
           <h3>Great Person Type</h3>
           <div className="chip-row">
