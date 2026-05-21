@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { ALL_PEOPLE } from "../data";
 import type { Person, GPType, Era } from "../data/people-types";
+import { canonicalCity } from "../data/city-aliases";
 
 const WorldMap = dynamic(() => import("./Map"), { ssr: false });
 
@@ -85,9 +86,9 @@ export default function Page() {
   const splitMulti = (s: string) =>
     s.split(/[\/,;]| and /).map((x) => x.trim()).filter(Boolean);
 
-  // Strip parenthetical qualifiers from a city name (e.g. "Memphis (traditional)" -> "Memphis").
-  const cleanCity = (s: string) =>
-    s.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  // Canonicalize a city name: strip parentheticals AND merge historical
+  // aliases (Constantinople→Istanbul, Jinling/Jianye→Nanjing, etc.).
+  const cleanCity = (s: string) => canonicalCity(s);
 
   const filtered = useMemo(() => {
     return ALL_PEOPLE.filter((p) => {
