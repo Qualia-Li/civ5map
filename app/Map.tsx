@@ -6,7 +6,7 @@ import {
 } from "react-simple-maps";
 import type { Person, GPType } from "../data/people-types";
 
-const WORLD_TOPO = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const WORLD_TOPO = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
 const TYPE_COLORS: Record<GPType, string> = {
   Scientist: "#5fbcd3",
@@ -64,7 +64,16 @@ export default function Map({ people, selected, onSelect }: Props) {
       setRotate([-lng, -lat, 0]);
     } else {
       setCenter([lng, lat]);
-      setZoom(2.4);
+      // span of the person's points; tighter span -> closer zoom
+      const lngs = pts.map(p => p[0]);
+      const lats = pts.map(p => p[1]);
+      const span = Math.max(
+        Math.max(...lngs) - Math.min(...lngs),
+        Math.max(...lats) - Math.min(...lats),
+        2 // floor so single-point lives don't slam to max zoom
+      );
+      const z = Math.min(32, Math.max(2.4, 80 / span));
+      setZoom(z);
     }
   }, [selected, proj]);
 
@@ -119,7 +128,7 @@ export default function Map({ people, selected, onSelect }: Props) {
         <Graticule stroke="#1e2a3a" strokeWidth={0.4} />
 
         {proj === "geoOrthographic" ? (
-          <MapContents people={people} selected={selected} onSelect={onSelect} />
+          <MapContents people={people} selected={selected} onSelect={onSelect} zoom={1} />
         ) : (
           <ZoomableGroup
             center={center}
@@ -129,9 +138,10 @@ export default function Map({ people, selected, onSelect }: Props) {
               setZoom(z);
             }}
             minZoom={0.8}
-            maxZoom={6}
+            maxZoom={64}
+            translateExtent={[[-200, -200], [1400, 900]]}
           >
-            <MapContents people={people} selected={selected} onSelect={onSelect} />
+            <MapContents people={people} selected={selected} onSelect={onSelect} zoom={zoom} />
           </ZoomableGroup>
         )}
       </ComposableMap>
@@ -147,7 +157,9 @@ export default function Map({ people, selected, onSelect }: Props) {
   );
 }
 
-function MapContents({ people, selected, onSelect }: Props) {
+function MapContents({ people, selected, onSelect, zoom }: Props & { zoom: number }) {
+  // Counter-scale so markers/lines stay screen-sized as the map zooms in.
+  const k = 1 / Math.max(0.5, zoom);
   return (
     <>
       <Geographies geography={WORLD_TOPO}>
@@ -159,6 +171,7 @@ function MapContents({ people, selected, onSelect }: Props) {
               fill="#1b232e"
               stroke="#324155"
               strokeWidth={0.4}
+              vectorEffect="non-scaling-stroke"
               style={{
                 default: { outline: "none" },
                 hover:   { fill: "#243042", outline: "none" },
@@ -171,15 +184,15 @@ function MapContents({ people, selected, onSelect }: Props) {
 
       {selected && selected.birth && selected.work && (
         <Line from={toLngLat(selected.birth.coords)} to={toLngLat(selected.work.coords)}
-          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5} strokeDasharray="3 4" />
+          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5 * k} strokeDasharray={`${3 * k} ${4 * k}`} />
       )}
       {selected && selected.work && selected.death && (
         <Line from={toLngLat(selected.work.coords)} to={toLngLat(selected.death.coords)}
-          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5} strokeDasharray="3 4" />
+          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5 * k} strokeDasharray={`${3 * k} ${4 * k}`} />
       )}
       {selected && !selected.work && selected.birth && selected.death && (
         <Line from={toLngLat(selected.birth.coords)} to={toLngLat(selected.death.coords)}
-          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5} strokeDasharray="3 4" />
+          stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5 * k} strokeDasharray={`${3 * k} ${4 * k}`} />
       )}
 
       {people.map((p) => {
@@ -189,23 +202,23 @@ function MapContents({ people, selected, onSelect }: Props) {
           <React.Fragment key={`${p.type}:${p.name}`}>
             {p.birth && (
               <Marker coordinates={toLngLat(p.birth.coords)} onClick={() => onSelect(p)}>
-                <circle r={isSel ? 5 : 3.2} fill="none" stroke={color}
-                  strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
+                <circle r={(isSel ? 5 : 3.2) * k} fill="none" stroke={color}
+                  strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
                 <title>{p.name} — born {p.birth.name}</title>
               </Marker>
             )}
             {p.work && (
               <Marker coordinates={toLngLat(p.work.coords)} onClick={() => onSelect(p)}>
-                <circle r={isSel ? 5.5 : 3.5} fill={color} fillOpacity={0.9}
-                  stroke={isSel ? "#fff" : "none"} strokeWidth={isSel ? 1 : 0}
+                <circle r={(isSel ? 5.5 : 3.5) * k} fill={color} fillOpacity={0.9}
+                  stroke={isSel ? "#fff" : "none"} strokeWidth={(isSel ? 1 : 0) * k}
                   style={{ cursor: "pointer" }} />
                 <title>{p.name} — {p.work.name}</title>
               </Marker>
             )}
             {p.death && (
               <Marker coordinates={toLngLat(p.death.coords)} onClick={() => onSelect(p)}>
-                <circle r={isSel ? 4.5 : 2.8} fill="#0a1118" stroke={color}
-                  strokeWidth={isSel ? 2 : 1.4} style={{ cursor: "pointer" }} />
+                <circle r={(isSel ? 4.5 : 2.8) * k} fill="#0a1118" stroke={color}
+                  strokeWidth={(isSel ? 2 : 1.4) * k} style={{ cursor: "pointer" }} />
                 <title>{p.name} — died {p.death.name}</title>
               </Marker>
             )}
