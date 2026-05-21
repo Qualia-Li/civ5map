@@ -1,0 +1,34 @@
+{
+  "source": "Civilization V (Vanilla + Gods & Kings + Brave New World) Great Person name pools, scraped via CivFanatics community references.",
+  "fetched": "2026-05-21",
+  "notes": "BNW split the original 'Great Artist' pool into Writer / Artist / Musician. We re-split below using each figure's primary medium. 'civ_hint' is best-effort historical association; not always the one the game tags them under.",
+  "types": {
+    "Scientist": [
+      "Merit Ptah","Xi Ling Shi","Nabu Rimanni","Socrates","Plato","Aristotle","Euclid","Ptolemy","Hypatia","Zu Chongzhi","Aryabhata","Al Kindi","Al Khwarizmi","Al Razi","Alhazen","Nicolaus Copernicus","Francis Bacon","Tycho Brahe","Johannes Kepler","Isaac Newton","Galileo Galilei","Rene Descartes","Antony Van Leeuwenhoek","Gottfried Leibniz","Mikhail Lomonosov","Antoine Laurent Lavoisier","Carl Friedrich Gauss","John Dalton","Michael Faraday","James Clerk Maxwell","Louis Pasteur","Charles Darwin","Ernest Rutherford","Marie Curie","Albert Einstein","Niels Bohr","Werner Heisenberg","Enrico Fermi","Rosalind Franklin","Andrei Sakharov","Al Din Al Tusi","Al Qasim Al Zahrawi","Leonard Euler","Richard Feynman","Alexander Von Humboldt","Andrey Kolmogorov","Mary Leakey","Carl Linnaeus","Shen Kuo","Gregor Mendel","Dmitry Mendeleev","John Von Neumann","Claude Shannon","Alan Turing"
+    ],
+    "Engineer": [
+      "Imhotep","Archimedes","Heron","Cai Lun","Zhang Heng","Bi Sheng","Leonardo Da Vinci","Sinan","Wilhelm Schickard","Blaise Pascal","Benjamin Franklin","Charles Augustin De Coulomb","James Watt","Joseph Marie Jacquard","Isambard Kingdom Brunel","William T.G. Morton","Louis Daguerre","Ferdinand De Lesseps","John Roebling","Norbert Rillieux","Henry Bessemer","Nain Singh","Alexander Graham Bell","Nikolaus August Otto","Nikola Tesla","Thomas Edison","Guglielmo Marconi","Alexandre Gustave Eiffel","George Washington Goethals","Henry Ford","Wilbur Wright","Orville Wright","Carl Benz","Gottlieb Daimler","Charles Stark Draper","George Eastman","Robert Goddard"
+    ],
+    "Merchant": [
+      "Harkuf","Hanno","Pytheas","Zhang Qian","Aretas III","Leif Erickson","Wang Anshi","Enrico Dandolo","Marco Polo","Ibn Battuta","Richard Whittington","Giovanni De Medici","Zheng He","Vasco Da Gama","Christopher Columbus","Ferdinand Magellan","Jacques Cartier","Raja Todar Mal","Antony Van Diemen","Sir Thomas Roe","Shah Jahan","Adam Smith","James Cook","Cornelius Vanderbilt","Sir Alexander Mackenzie","John Stuart Mill","Andrew Carnegie","John D Rockefeller","John Maynard Keynes","Coco Chanel","Marcus Licinius Crassus","Edward Harriman","Milton S Hershey","Sir James Lancaster","Henri Nestle","Levi Strauss","Thomas Twining","Steve Jobs"
+    ],
+    "Writer": [
+      "Homer","Valmiki","Virgil","Kalidas","Li Po","Du Fu","Jalal Aldin Rumi","Dante Alighieri","Yunus Emre","Amir Khusro","William Shakespeare","Miguel De Cervantes","Johann Goethe","Victor Hugo","Mark Twain","Joseph Conrad","Franz Kafka","Arthur Conan Doyle","Ernest Hemingway","Omar Khayyam","Pablo Neruda","Friedrich Schiller","Leo Tolstoy","William Butler Yeats","Murasaki Shikibu"
+    ],
+    "Artist": [
+      "Thespis","Ling Lun","Wang Xizhi","Ibn Muqlah","Michelangelo","Raphael","Rembrandt","Johannes Vermeer","Vincent Van Gogh","Claude Monet","Pablo Picasso","Salvador Dalí","Antoni Gaudí","Friedensreich Hundertwasser","Stanley Kubrick","Frank Lloyd Wright","Ansel Adams","Bartolome De Las Casas","Donatello","Frida Kahlo","Hokusai"
+    ],
+    "Musician": [
+      "J.S. Bach","Wolfgang Mozart","Ludwig Van Beethoven","Johannes Brahms","Antonin Dvorak","Louis Armstrong","Duke Ellington","Miles Davis","Franz Liszt","Gustav Mahler","Franz Joseph Haydn","Niccolo Paganini","Giovanni Pierluigi da Palestrina","Antonio Vivaldi","Frederic Chopin","Pyotr Tchaikovsky","Mirabai","Enheduanna"
+    ],
+    "General": [
+      "Sargon","Sun Tzu","Leonidas","Lysander","Chandragupta Maurya","Hamilcar Barca","Gaius Marius","Scipio Africanus","Vercingetorix","Arminius","Cao Cao","Zhuge Liang","Belisarius","Khaled Ibn Al Walid","Charles Martel","El Cid","William The Conqueror","Subutai","Timur","Jeanne d'Arc","Auitzotl","Hernan Cortes","Francisco Pizarro","Ivan The Terrible","Akbar","Gustavus Adolphus","Michiel De Ruyter","Cromwell","Eugene Of Savoy","Lord Nelson","Geronimo","Robert E. Lee","Isoroku Yamamoto","George S. Patton","Bernard Montgomery","Heinz Guderian","Erwin Rommel","Georgy Zhukov","Epaminondas","Maurice Of Nassau","Pompey","Pyrrhus","Winfield Scott","Sitting Bull","Spartacus","Johann Tserclaes","Wallenstein","Alexander The Great","Julius Caesar","Hannibal Barca","Napoleon Bonaparte","Genghis Khan","Saladin","George Washington"
+    ],
+    "Admiral": [
+      "Matthew Perry","David Farragut","George Dewey","Chester Nimitz","Francis Drake","Andrew Cunningham","Comte De Grasse","Alfred Von Tirpitz","Roger Of Lauria","Álvaro De Bazán","Don John Of Austria","Fernando Villaamil","Peter Tordenskjold","Fyodor Ushakov","John Paul Jones","Zinovy Rozhestvenski","Yi Sun-sin","Erik Thorvaldsson","Leif Ericson","Hayreddin Barbarossa","Turgut Reis","Murat Reis","Henry The Navigator","Afonso De Albuquerque","Andrea Doria","Phormio","Marcus Atilius Regulus","Marcus Vipsanius Agrippa","Himilco","Calonymus Of Alexandria","John Doukas","Togo Heihachiro","Shi Lang","Themistocles","Cheng I Sao","Zheng He"
+    ],
+    "Prophet": [
+      "Moses","Zoroaster","Siddhartha Gautama","Confucius","Laozi","Mahavira","Jesus of Nazareth","Muhammad","Adi Shankara","Guru Nanak","Bodhidharma","Nichiren","Padmasambhava","Mani","Abraham","Ezekiel","Saint Paul","Saint Augustine","Saint Patrick","Thomas Aquinas","Martin Luther","John Calvin","Joseph Smith","Baha'u'llah","Ananda","Hong Xiuquan","Quetzalcoatl (legendary)"
+    ]
+  }
+}
