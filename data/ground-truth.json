@@ -5,7 +5,8 @@
   "notes": [
     "BNW split the original 'Great Artist' pool into Writer / Artist / Musician. We re-split below using each figure's primary medium.",
     "Civ V's Great General pool deliberately EXCLUDES historical figures who are also Civ V civilization leaders (so Napoleon, Alexander, Genghis Khan, Saladin, George Washington are NOT in the General pool — they appear as leaders, not as GG names).",
-    "Earlier versions of this file mistakenly included those 5 leaders plus Julius Caesar and Hannibal Barca (neither of whom appears in the published CivFanatics General list). Hamilcar Barca, Hannibal's father, IS in the list — that's the legitimate Carthaginian general."
+    "Earlier versions of this file mistakenly included those 5 leaders plus Julius Caesar and Hannibal Barca (neither of whom appears in the published CivFanatics General list). Hamilcar Barca, Hannibal's father, IS in the list — that's the legitimate Carthaginian general.",
+    "Civ V naming mechanism: Great GENERALS and Great ADMIRALS draw from civ-specific name pools first (each civ has its own <UniqueNames> XML block, e.g. Rome's GG pool includes Caesar / Pompey / Marius), then fall back to a generic shared pool. All OTHER Great Person types — Scientist, Engineer, Merchant, Artist, Writer, Musician, Prophet — draw from a single GLOBAL pool with no per-civ override. (This was confused for Civ VI, which uses named pre-defined Great People drawn from era pools instead of random naming.) So this file's Prophet/Scientist/etc. lists ARE complete for Civ V; only General/Admiral could in principle have civ-specific names we haven't captured here, and even those overlap heavily with the global pool."
   ],
   "types": {
     "Scientist": [
