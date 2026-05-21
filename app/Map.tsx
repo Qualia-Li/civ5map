@@ -263,26 +263,54 @@ function MapContents({ people, selected, onSelect, onClusterClick, zoom }: Props
           stroke={TYPE_COLORS[selected.type]} strokeWidth={1.5 * k} strokeDasharray={`${3 * k} ${4 * k}`} />
       )}
 
-      {/* Halo for spots that aggregate multiple people — the more there are,
-          the bigger the ring. The dominant Great-Person type colors the halo. */}
+      {/* Halo for spots that aggregate multiple people — sized by sqrt(count).
+          When multiple Great-Person types share a city, the halo is split
+          into arcs proportional to each type's share at that spot. */}
       {[...buckets.values()].filter((b) => b.people.length >= 2).map((b) => {
-        const counts = new globalThis.Map<string, number>();
+        const counts = new globalThis.Map<GPType, number>();
         for (const p of b.people) counts.set(p.type, (counts.get(p.type) ?? 0) + 1);
-        const dom = [...counts.entries()].sort((a, c) => c[1] - a[1])[0][0];
-        const color = TYPE_COLORS[dom as GPType];
-        const r = (4 + 2.6 * Math.sqrt(b.people.length)) * k;
+        const entries = [...counts.entries()].sort((a, c) => c[1] - a[1]);
+        const dom = entries[0][0];
+        const total = b.people.length;
+        const r = (4 + 2.6 * Math.sqrt(total)) * k;
+
+        // Faint fill behind the arcs so the donut reads as a single halo
+        // and stays clickable even between arc strokes.
+        let cum = 0;
+        const arcs = entries.map(([type, count]) => {
+          const a0 = cum / total * 2 * Math.PI - Math.PI / 2;   // start at top
+          cum += count;
+          const a1 = cum / total * 2 * Math.PI - Math.PI / 2;
+          const x0 = r * Math.cos(a0), y0 = r * Math.sin(a0);
+          const x1 = r * Math.cos(a1), y1 = r * Math.sin(a1);
+          const large = a1 - a0 > Math.PI ? 1 : 0;
+          // M start  A rx ry rot large-arc sweep end
+          const path = `M ${x0.toFixed(3)} ${y0.toFixed(3)} A ${r.toFixed(3)} ${r.toFixed(3)} 0 ${large} 1 ${x1.toFixed(3)} ${y1.toFixed(3)}`;
+          return { type, color: TYPE_COLORS[type], path };
+        });
+
         return (
           <Marker key={`halo:${coordKey(b.coords)}`} coordinates={toLngLat(b.coords)}
             onClick={(ev: any) => {
               if (onClusterClick) onClusterClick(b.people, { x: ev.clientX, y: ev.clientY }, b.placeLabel);
             }}>
-            <circle r={r} fill={color} fillOpacity={0.08}
-              stroke={color} strokeOpacity={0.55} strokeWidth={1.2 * k}
+            <circle r={r} fill={TYPE_COLORS[dom]} fillOpacity={0.07}
               style={{ cursor: "pointer", pointerEvents: "all" }} />
+            {arcs.length === 1 ? (
+              <circle r={r} fill="none" stroke={arcs[0].color}
+                strokeOpacity={0.7} strokeWidth={1.6 * k}
+                style={{ cursor: "pointer", pointerEvents: "all" }} />
+            ) : (
+              arcs.map((a, i) => (
+                <path key={i} d={a.path} fill="none" stroke={a.color}
+                  strokeOpacity={0.9} strokeWidth={2.4 * k} strokeLinecap="butt"
+                  style={{ cursor: "pointer", pointerEvents: "stroke" }} />
+              ))
+            )}
             <text y={-r - 4 * k} textAnchor="middle"
-              style={{ pointerEvents: "none", fill: color, fontSize: 10 * k, fontWeight: 600,
+              style={{ pointerEvents: "none", fill: TYPE_COLORS[dom], fontSize: 10 * k, fontWeight: 600,
                        paintOrder: "stroke", stroke: "#0a1118", strokeWidth: 2 * k }}>
-              {b.people.length}
+              {total}
             </text>
           </Marker>
         );
