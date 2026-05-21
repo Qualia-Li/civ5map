@@ -133,8 +133,14 @@ export default function Map({ people, selected, onSelect, onClusterClick }: Prop
         onMouseUp={() => { dragRef.current = null; }}
         onMouseLeave={() => { dragRef.current = null; }}
       >
-        <Sphere id="sphere" stroke="#324155" strokeWidth={0.5} fill="#0e1620" />
-        <Graticule stroke="#1e2a3a" strokeWidth={0.4} />
+        {/* Globe view: keep the sphere outline so it reads as a planet.
+            Flat projections: skip it (no random rectangle in the ocean). */}
+        {proj === "geoOrthographic" && (
+          <>
+            <Sphere id="sphere" stroke="#324155" strokeWidth={0.5} fill="#0e1620" />
+            <Graticule stroke="#1e2a3a" strokeWidth={0.4} />
+          </>
+        )}
 
         {proj === "geoOrthographic" ? (
           <MapContents people={people} selected={selected} onSelect={onSelect}
