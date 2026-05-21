@@ -7,6 +7,9 @@ import {
 import type { Person, GPType } from "../data/people-types";
 
 const WORLD_TOPO = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
+// Natural Earth admin-1 (states / provinces / prefectures). ~1.5 MB, lazy-loaded once.
+const ADMIN1_GEOJSON =
+  "https://cdn.jsdelivr.net/gh/martynafford/natural-earth-geojson@master/50m/cultural/ne_50m_admin_1_states_provinces_lakes.json";
 
 const TYPE_COLORS: Record<GPType, string> = {
   Scientist: "#5fbcd3",
@@ -160,6 +163,8 @@ export default function Map({ people, selected, onSelect }: Props) {
 function MapContents({ people, selected, onSelect, zoom }: Props & { zoom: number }) {
   // Counter-scale so markers/lines stay screen-sized as the map zooms in.
   const k = 1 / Math.max(0.5, zoom);
+  // Only fetch + render subdivisions once we're zoomed past the world view.
+  const showAdmin1 = zoom >= 2.2;
   return (
     <>
       <Geographies geography={WORLD_TOPO}>
@@ -170,7 +175,7 @@ function MapContents({ people, selected, onSelect, zoom }: Props & { zoom: numbe
               geography={geo}
               fill="#1b232e"
               stroke="#324155"
-              strokeWidth={0.4}
+              strokeWidth={0.5}
               vectorEffect="non-scaling-stroke"
               style={{
                 default: { outline: "none" },
@@ -181,6 +186,29 @@ function MapContents({ people, selected, onSelect, zoom }: Props & { zoom: numbe
           ))
         }
       </Geographies>
+
+      {showAdmin1 && (
+        <Geographies geography={ADMIN1_GEOJSON}>
+          {({ geographies }) =>
+            geographies.map((geo) => (
+              <Geography
+                key={geo.rsmKey}
+                geography={geo}
+                fill="transparent"
+                stroke="#3d5572"
+                strokeWidth={0.35}
+                strokeOpacity={Math.min(1, (zoom - 2.2) / 2)}
+                vectorEffect="non-scaling-stroke"
+                style={{
+                  default: { outline: "none", pointerEvents: "none" },
+                  hover:   { outline: "none", pointerEvents: "none" },
+                  pressed: { outline: "none", pointerEvents: "none" },
+                }}
+              />
+            ))
+          }
+        </Geographies>
+      )}
 
       {selected && selected.birth && selected.work && (
         <Line from={toLngLat(selected.birth.coords)} to={toLngLat(selected.work.coords)}
