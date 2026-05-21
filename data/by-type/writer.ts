@@ -177,7 +177,7 @@ export const PEOPLE_WRITER: Person[] = [
     era: 'Industrial',
     born: 1749,
     died: 1832,
-    birth: { name: 'Frankfurt am Main', coords: [50.1109, 8.6821] },
+    birth: { name: 'Frankfurt', coords: [50.1109, 8.6821] },
     work: { name: 'Weimar', coords: [50.9795, 11.3235] },
     death: { name: 'Weimar', coords: [50.9795, 11.3235] },
     works: ['Faust', 'The Sorrows of Young Werther', 'Wilhelm Meister’s Apprenticeship'],

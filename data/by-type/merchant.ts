@@ -95,7 +95,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     died: 1086,
     birth: { name: 'Linchuan', coords: [27.9511, 116.3581] },
     work: { name: 'Kaifeng', coords: [34.7973, 114.3076] },
-    death: { name: 'Jiangning', coords: [32.0603, 118.7969] },
+    death: { name: 'Nanjing', coords: [32.0603, 118.7969] },
     works: ['New Policies', 'Green Sprouts loans', 'State Trade Bureau reforms', 'Baojia administration'],
     blurb: 'Song reformer who treated credit, taxation, and state commerce as tools of national strength.'
   },
@@ -472,7 +472,7 @@ export const PEOPLE_MERCHANT: Person[] = [
     era: 'Industrial',
     born: 1814,
     died: 1890,
-    birth: { name: 'Frankfurt am Main', coords: [50.1109, 8.6821] },
+    birth: { name: 'Frankfurt', coords: [50.1109, 8.6821] },
     work: { name: 'Vevey', coords: [46.4628, 6.8419] },
     death: { name: 'Glion', coords: [46.4312, 6.9276] },
     works: ['Farine Lactée', 'Nestlé infant-food business', 'Condensed milk partnerships'],

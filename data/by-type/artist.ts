@@ -275,9 +275,9 @@ export const PEOPLE_ARTIST: Person[] = [
     era: 'Modern',
     born: 1907,
     died: 1954,
-    birth: { name: 'Coyoacan', coords: [19.3467, -99.1617] },
-    work: { name: 'Coyoacan', coords: [19.3467, -99.1617] },
-    death: { name: 'Coyoacan', coords: [19.3467, -99.1617] },
+    birth: { name: 'Mexico City', coords: [19.4326, -99.1332] },
+    work: { name: 'Mexico City', coords: [19.4326, -99.1332] },
+    death: { name: 'Mexico City', coords: [19.4326, -99.1332] },
     works: ['The Two Fridas', 'Self-Portrait with Thorn Necklace and Hummingbird', 'The Broken Column', 'Henry Ford Hospital'],
     blurb: 'Mexican painter whose intense self-portraits fused bodily pain, politics, and personal symbolism.'
   },

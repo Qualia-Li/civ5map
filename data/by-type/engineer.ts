@@ -193,7 +193,7 @@ export const PEOPLE_ENGINEER: Person[] = [
     died: 1834,
     birth: { name: 'Lyon', coords: [45.764, 4.8357] },
     work: { name: 'Lyon', coords: [45.764, 4.8357] },
-    death: { name: 'Oullins', coords: [45.714, 4.8064] },
+    death: { name: 'Lyon', coords: [45.714, 4.8064] },
     works: ['Jacquard loom', 'Punch-card control system', 'Automated patterned weaving'],
     blurb: 'Inventor of the programmable loom attachment whose punched-card control became a landmark in automation history.',
   },

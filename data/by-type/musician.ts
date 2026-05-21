@@ -93,7 +93,7 @@ export const PEOPLE_MUSICIAN: Person[] = [
     era: 'Modern',
     born: 1899,
     died: 1974,
-    birth: { name: 'Washington', coords: [38.9072, -77.0369] },
+    birth: { name: 'Washington, D.C.', coords: [38.9072, -77.0369] },
     work: { name: 'New York City', coords: [40.7128, -74.006] },
     death: { name: 'New York City', coords: [40.7128, -74.006] },
     works: ['Mood Indigo', 'It Don\'t Mean a Thing (If It Ain\'t Got That Swing)', 'Sophisticated Lady', 'Black, Brown and Beige'],

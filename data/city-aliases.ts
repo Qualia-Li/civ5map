@@ -20,6 +20,9 @@ export const CITY_ALIASES: Record<string, string> = {
   "bianjing":             "Kaifeng",
   "bianliang":            "Kaifeng",
   "lin'an":               "Hangzhou",
+  "jiangning":            "Nanjing",  // Qing-era prefecture name for Nanjing
+  "mochou":               "Nanjing",
+  "moling":               "Nanjing",
   "linan":                "Hangzhou",
   "qiantang":             "Hangzhou",
   "qufu":                 "Qufu",

@@ -472,7 +472,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1885,
     died: 1945,
     birth: { name: "Los Angeles", coords: [34.0522, -118.2437] },
-    work: { name: "Washington", coords: [38.9072, -77.0369] },
+    work: { name: "Washington, D.C.", coords: [38.9072, -77.0369] },
     death: { name: "Heidelberg", coords: [49.3988, 8.6724] },
     works: ["Operation Torch", "Sicily campaign", "Lorraine campaign", "Relief of Bastogne"],
     blurb: "Patton excelled at mobile warfare and aggressive exploitation during the U.S. Army's European campaigns."
@@ -598,7 +598,7 @@ export const PEOPLE_GENERAL: Person[] = [
     born: 1786,
     died: 1866,
     birth: { name: "Petersburg", coords: [37.2279, -77.4019] },
-    work: { name: "Washington", coords: [38.9072, -77.0369] },
+    work: { name: "Washington, D.C.", coords: [38.9072, -77.0369] },
     death: { name: "West Point", coords: [41.3910, -73.9550] },
     works: ["Niagara campaign", "Capture of Veracruz", "Battle of Cerro Gordo", "Mexico City campaign"],
     blurb: "Old Fuss and Feathers led the most successful U.S. campaign of the nineteenth century in Mexico."

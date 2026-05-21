@@ -39,7 +39,7 @@ export const PEOPLE_ADMIRAL: Person[] = [
     died: 1917,
     birth: { name: 'Montpelier', coords: [44.2601, -72.5754] },
     work: { name: 'Manila Bay', coords: [14.5833, 120.85] },
-    death: { name: 'Washington', coords: [38.9072, -77.0369] },
+    death: { name: 'Washington, D.C.', coords: [38.9072, -77.0369] },
     works: ['Battle of Manila Bay', 'Asiatic Squadron command', 'Spanish–American War'],
     blurb: 'Hero of Manila Bay and the only officer in U.S. history to hold the rank Admiral of the Navy.'
   },
