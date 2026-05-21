@@ -20,7 +20,7 @@ const TYPE_COLORS: Record<GPType, string> = {
 function fmtYear(y?: number) {
   if (y === undefined) return "?";
   if (y < 0) return `${-y} BCE`;
-  return `${y} CE`;
+  return `${y}`; // CE implicit
 }
 
 function RankPanel({ title, rows, total, onPick }: {
