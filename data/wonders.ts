@@ -615,9 +615,9 @@ export const VISITED_WONDER_NAMES = new Set<string>([
   "Machu Picchu", "Forbidden Palace", "Leaning Tower of Pisa", "Porcelain Tower",
   "Red Fort", "Sistine Chapel", "Taj Mahal", "Uffizi", "Broadway",
   "Neuschwanstein", "Statue of Liberty", "Pentagon", "CN Tower", "United Nations",
-  // National
-  "Circus Maximus", "East India Company", "National Intelligence Agency",
-  "National Visitor Center",
+  "Temple of Artemis", "Colosseum", "Sydney Opera House",
+  // National — only the two actually visited
+  "Circus Maximus", "East India Company",
   // Natural — only Mt. Fuji
   "Mt. Fuji",
   // Civ VI additions
