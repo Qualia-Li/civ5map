@@ -3,17 +3,20 @@
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { WONDERS, WONDER_CATEGORY_COLORS } from "../data/wonders";
-import type { Wonder, WonderCategory, WonderStatus } from "../data/wonders";
+import type { Wonder, WonderCategory, WonderStatus, GameId } from "../data/wonders";
 import ModeTabs, { type Mode } from "./ModeTabs";
 
 const WonderMap = dynamic(() => import("./WonderMap"), { ssr: false });
 
 const CATEGORIES: WonderCategory[] = ["World", "National", "Natural", "Unused"];
 const STATUSES: WonderStatus[] = ["original", "reconstructed", "ruined", "mythical"];
+const GAMES: GameId[] = ["V", "VI"];
 
 const STATUS_LABEL: Record<WonderStatus, string> = {
   original: "Original", reconstructed: "Reconstructed", ruined: "Ruined", mythical: "Mythical",
 };
+const GAME_LABEL: Record<GameId, string> = { V: "Civ V", VI: "Civ VI" };
+const gamesLabel = (g?: GameId[]) => (g ?? []).map((x) => GAME_LABEL[x]).join(" & ");
 
 const clickable = (onActivate: (e: any) => void) => ({
   role: "button" as const,
@@ -27,6 +30,7 @@ const clickable = (onActivate: (e: any) => void) => ({
 export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
   const [activeCats, setActiveCats] = useState<Set<WonderCategory>>(new Set(CATEGORIES));
   const [activeStatuses, setActiveStatuses] = useState<Set<WonderStatus>>(new Set(STATUSES));
+  const [activeGames, setActiveGames] = useState<Set<GameId>>(new Set(GAMES));
   const [visitedOnly, setVisitedOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Wonder | null>(null);
@@ -35,13 +39,14 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
     return WONDERS.filter((w) => {
       if (!activeCats.has(w.category)) return false;
       if (!activeStatuses.has(w.status)) return false;
+      if (!(w.games ?? []).some((g) => activeGames.has(g))) return false;
       if (visitedOnly && !w.visited) return false;
       if (search && !w.name.toLowerCase().includes(search.toLowerCase())
                  && !(w.location?.name.toLowerCase().includes(search.toLowerCase()))
                  && !(w.civ?.toLowerCase().includes(search.toLowerCase()))) return false;
       return true;
     });
-  }, [activeCats, activeStatuses, visitedOnly, search]);
+  }, [activeCats, activeStatuses, activeGames, visitedOnly, search]);
 
   const stats = useMemo(() => {
     const total = WONDERS.length;
@@ -62,7 +67,7 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
   };
 
   const dirty = activeCats.size !== CATEGORIES.length || activeStatuses.size !== STATUSES.length
-    || visitedOnly || search || selected;
+    || activeGames.size !== GAMES.length || visitedOnly || search || selected;
 
   return (
     <div className="app">
@@ -70,8 +75,8 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
         <ModeTabs mode={mode} setMode={setMode} />
         <h1>Civ V <span>Wonders</span> Atlas</h1>
         <div className="sub">
-          {stats.total} wonders of Civilization V — {stats.byCat.map((b) => `${b.n} ${b.c}`).join(" · ")} — pinned to
-          the real places that inspired them. {stats.visited} visited.
+          {stats.total} wonders of Civilization V &amp; VI, pinned to the real places that inspired
+          them. {stats.byCat.map((b) => `${b.n} ${b.c}`).join(" · ")}. {stats.visited} visited.
         </div>
 
         {dirty && (
@@ -79,6 +84,7 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
             onClick={() => {
               setActiveCats(new Set(CATEGORIES));
               setActiveStatuses(new Set(STATUSES));
+              setActiveGames(new Set(GAMES));
               setVisitedOnly(false);
               setSearch("");
               setSelected(null);
@@ -109,6 +115,21 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        <div className="filter-group">
+          <h3>Game</h3>
+          <div className="chip-row">
+            {GAMES.map((g) => (
+              <div key={g}
+                className={`chip ${activeGames.has(g) ? "active" : ""}`}
+                aria-pressed={activeGames.has(g)}
+                title="Click to isolate · shift-click to add/remove"
+                {...clickable((e) => isolate(activeGames, setActiveGames, GAMES, g, e))}>
+                {GAME_LABEL[g]}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -153,7 +174,7 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
               <div className="dot" style={{ background: WONDER_CATEGORY_COLORS[w.category] }} />
               <div>{w.name}{" "}
                 <span style={{ color: "var(--muted)", fontSize: 11 }}>
-                  · {w.location?.name ?? w.civ ?? w.status}
+                  · {w.location?.name ?? w.civ ?? w.status} · {gamesLabel(w.games)}
                 </span>
               </div>
               <div className="yr">{w.visited ? "✓" : ""}</div>
@@ -195,6 +216,7 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
               {selected.era ? ` · ${selected.era}` : ""}
               {selected.civ ? ` · ${selected.civ}` : ""}
               {" · "}{STATUS_LABEL[selected.status]}
+              {" · "}{gamesLabel(selected.games)}
             </div>
             {selected.visited && (
               <div style={{

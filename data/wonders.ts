@@ -21,6 +21,8 @@ import type { Place } from "./people-types";
 
 export type WonderCategory = "World" | "National" | "Natural" | "Unused";
 
+export type GameId = "V" | "VI";
+
 export type WonderStatus = "original" | "ruined" | "reconstructed" | "mythical";
 
 export type WonderEra =
@@ -36,6 +38,7 @@ export interface Wonder {
   location?: Place;         // real-world inspiration; omitted if generic/unvisitable
   note?: string;            // why there is no location, when there isn't one
   visited?: boolean;        // the owner has stood at the real-world site
+  games?: GameId[];         // which games it appears in (computed below)
   blurb: string;
 }
 
@@ -471,6 +474,137 @@ const RAW_WONDERS: Wonder[] = [
   },
 ];
 
+// Wonders that debuted in Civilization VI and never appeared in Civ V. All are
+// World Wonders in VI. (Shared wonders like the Pyramids are not repeated here —
+// they live in the Civ V list above and are tagged as appearing in both games.)
+const CIV6_EXCLUSIVE: Wonder[] = [
+  {
+    name: "Amundsen-Scott Research Station", category: "World", era: "Information", civ: "Antarctica", status: "original",
+    location: { name: "South Pole", coords: [-90.0000, 0.0000] },
+    blurb: "The U.S. research base at the geographic South Pole, staffed year-round since 1956.",
+  },
+  {
+    name: "Apadana", category: "World", era: "Classical", civ: "Iran", status: "ruined",
+    location: { name: "Persepolis", coords: [29.9354, 52.8916] },
+    blurb: "The great audience hall of the Persian kings at Persepolis; its columns stand as ruins.",
+  },
+  {
+    name: "Biosphère", category: "World", era: "Modern", civ: "Canada", status: "original",
+    location: { name: "Montreal", coords: [45.5277, -73.5333] },
+    blurb: "Buckminster Fuller's geodesic dome from Expo 67, now an environment museum on Île Sainte-Hélène.",
+  },
+  {
+    name: "Bolshoi Theatre", category: "World", era: "Industrial", civ: "Russia", status: "original",
+    location: { name: "Moscow", coords: [55.7602, 37.6186] },
+    blurb: "Moscow's historic ballet and opera house, founded in 1776 and rebuilt after fires.",
+  },
+  {
+    name: "Casa de Contratación", category: "World", era: "Renaissance", civ: "Spain", status: "original",
+    location: { name: "Seville", coords: [37.3839, -5.9925] },
+    blurb: "The crown agency in Seville that controlled Spain's exploration and trade with the Americas.",
+  },
+  {
+    name: "Colosseum", category: "World", era: "Classical", civ: "Italy", status: "original",
+    location: { name: "Rome", coords: [41.8902, 12.4922] },
+    blurb: "Rome's great Flavian amphitheatre, still standing as the largest ever built.",
+  },
+  {
+    name: "Estádio do Maracanã", category: "World", era: "Atomic", civ: "Brazil", status: "original",
+    location: { name: "Rio de Janeiro", coords: [-22.9122, -43.2302] },
+    blurb: "Rio's vast football stadium, built for the 1950 World Cup.",
+  },
+  {
+    name: "Etemenanki", category: "World", era: "Ancient", civ: "Iraq", status: "ruined",
+    location: { name: "Babylon", coords: [32.5355, 44.4209] },
+    blurb: "The great ziggurat of Babylon dedicated to Marduk — the likely basis of the Tower of Babel.",
+  },
+  {
+    name: "Golden Gate Bridge", category: "World", era: "Modern", civ: "United States", status: "original",
+    location: { name: "San Francisco", coords: [37.8199, -122.4783] },
+    blurb: "The 1937 suspension bridge spanning the strait at the mouth of San Francisco Bay.",
+  },
+  {
+    name: "Great Bath", category: "World", era: "Ancient", civ: "Pakistan", status: "ruined",
+    location: { name: "Mohenjo-daro", coords: [27.3294, 68.1386] },
+    blurb: "The watertight public pool of Mohenjo-daro, a marvel of Indus Valley engineering.",
+  },
+  {
+    name: "Great Zimbabwe", category: "World", era: "Medieval", civ: "Zimbabwe", status: "ruined",
+    location: { name: "Masvingo", coords: [-20.2674, 30.9335] },
+    blurb: "The dry-stone walled city of a medieval Shona kingdom in southern Africa.",
+  },
+  {
+    name: "Huey Teocalli", category: "World", era: "Medieval", civ: "Mexico", status: "ruined",
+    location: { name: "Mexico City", coords: [19.4346, -99.1313] },
+    blurb: "The Templo Mayor, great pyramid-temple of the Aztec capital Tenochtitlan, now excavated ruins.",
+  },
+  {
+    name: "Jebel Barkal", category: "World", era: "Classical", civ: "Sudan", status: "original",
+    location: { name: "Karima", coords: [18.5353, 31.8289] },
+    blurb: "The sacred Nubian butte and its temples to Amun, a royal centre of the Kushite kingdom.",
+  },
+  {
+    name: "Kilwa Kisiwani", category: "World", era: "Medieval", civ: "Tanzania", status: "ruined",
+    location: { name: "Kilwa", coords: [-8.9575, 39.5247] },
+    blurb: "The Swahili coast trading island whose coral-stone palace and mosque now stand as ruins.",
+  },
+  {
+    name: "Kotoku-in", category: "World", era: "Medieval", civ: "Japan", status: "original",
+    location: { name: "Kamakura", coords: [35.3169, 139.5358] },
+    blurb: "The temple at Kamakura home to the Great Buddha, a 13th-century bronze colossus.",
+  },
+  {
+    name: "Mahabodhi Temple", category: "World", era: "Classical", civ: "India", status: "original",
+    location: { name: "Bodh Gaya", coords: [24.6961, 84.9912] },
+    blurb: "The temple at Bodh Gaya marking the spot where the Buddha attained enlightenment.",
+  },
+  {
+    name: "Meenakshi Temple", category: "World", era: "Renaissance", civ: "India", status: "original",
+    location: { name: "Madurai", coords: [9.9195, 78.1193] },
+    blurb: "The towering, gopuram-crowned Hindu temple complex of Madurai in Tamil Nadu.",
+  },
+  {
+    name: "Mont St. Michel", category: "World", era: "Medieval", civ: "France", status: "original",
+    location: { name: "Normandy", coords: [48.6360, -1.5115] },
+    blurb: "The tidal-island abbey off the Normandy coast, a fortified pilgrimage site since the 8th century.",
+  },
+  {
+    name: "Országház", category: "World", era: "Industrial", civ: "Hungary", status: "original",
+    location: { name: "Budapest", coords: [47.5072, 19.0458] },
+    blurb: "The Hungarian Parliament Building on the Danube, a vast neo-Gothic landmark opened in 1902.",
+  },
+  {
+    name: "Potala Palace", category: "World", era: "Renaissance", civ: "China", status: "original",
+    location: { name: "Lhasa", coords: [29.6558, 91.1170] },
+    blurb: "The towering former winter palace of the Dalai Lamas, rising over Lhasa in Tibet.",
+  },
+  {
+    name: "Ruhr Valley", category: "World", era: "Industrial", civ: "Germany", status: "original",
+    location: { name: "Essen", coords: [51.4800, 7.2200] },
+    blurb: "Germany's great coal-and-steel industrial region, the engine of its 19th-century rise.",
+  },
+  {
+    name: "St. Basil's Cathedral", category: "World", era: "Renaissance", civ: "Russia", status: "original",
+    location: { name: "Moscow", coords: [55.7525, 37.6231] },
+    blurb: "The riot of colored onion domes on Red Square, completed for Ivan the Terrible in 1561.",
+  },
+  {
+    name: "Torre de Belém", category: "World", era: "Renaissance", civ: "Portugal", status: "original",
+    location: { name: "Lisbon", coords: [38.6916, -9.2160] },
+    blurb: "The Manueline fortress-tower on the Tagus that guarded Lisbon's harbour in the Age of Discovery.",
+  },
+  {
+    name: "University of Sankore", category: "World", era: "Medieval", civ: "Mali", status: "original",
+    location: { name: "Timbuktu", coords: [16.7735, -2.9981] },
+    blurb: "The mosque and madrasa of Timbuktu, a renowned centre of learning in the Mali and Songhai empires.",
+  },
+  {
+    name: "Venetian Arsenal", category: "World", era: "Medieval", civ: "Italy", status: "original",
+    location: { name: "Venice", coords: [45.4350, 12.3517] },
+    blurb: "Venice's vast state shipyard, an early assembly line that built the republic's war fleet.",
+  },
+];
+
 // Wonders the owner has personally visited. The source of truth is this flat
 // list of names — it was originally gathered by country (everything in Italy,
 // India, China, Canada, and the USA) plus a handful of named extras, but those
@@ -487,9 +621,25 @@ export const VISITED_WONDER_NAMES = new Set<string>([
   // Natural
   "Fountain of Youth", "Mt. Kailash", "Mt. Fuji", "Old Faithful",
   "The Barringer Crater", "The Grand Mesa",
+  // Civ VI additions
+  "Biosphère", "Golden Gate Bridge", "Országház",
 ]);
 
-export const WONDERS: Wonder[] = RAW_WONDERS.map((w) => ({
-  ...w,
-  visited: VISITED_WONDER_NAMES.has(w.name),
-}));
+// Civ V wonders (by Civ V spelling) that also appear as World Wonders in Civ VI.
+const ALSO_IN_CIV6 = new Set<string>([
+  "Alhambra", "Angkor Wat", "Big Ben", "Broadway", "Chichen Itza", "Colossus",
+  "Cristo Redentor", "Eiffel Tower", "Forbidden Palace", "Great Library",
+  "Great Lighthouse", "Hagia Sophia", "Hanging Gardens", "Hermitage",
+  "Machu Picchu", "Mausoleum of Halicarnassus", "Oracle", "Oxford University",
+  "Panama Canal", "Petra", "Pyramids", "Statue of Liberty", "Statue of Zeus",
+  "Stonehenge", "Sydney Opera House", "Taj Mahal", "Temple of Artemis",
+  "Terracotta Army",
+]);
+
+export const WONDERS: Wonder[] = [
+  ...RAW_WONDERS.map((w) => ({
+    ...w,
+    games: (ALSO_IN_CIV6.has(w.name) ? ["V", "VI"] : ["V"]) as GameId[],
+  })),
+  ...CIV6_EXCLUSIVE.map((w) => ({ ...w, games: ["VI"] as GameId[] })),
+].map((w) => ({ ...w, visited: VISITED_WONDER_NAMES.has(w.name) }));
