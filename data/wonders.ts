@@ -93,7 +93,7 @@ const RAW_WONDERS: Wonder[] = [
   },
   {
     name: "Great Wall", category: "World", era: "Classical", civ: "China", status: "original",
-    location: { name: "Badaling", coords: [40.3587, 116.0169] },
+    location: { name: "Jiayuguan, Gansu", coords: [39.8017, 98.2880] },
     blurb: "The fortified frontier of China; its best-preserved Ming sections still snake across the hills.",
   },
   {
