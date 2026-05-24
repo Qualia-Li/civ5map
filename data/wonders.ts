@@ -312,14 +312,14 @@ const RAW_WONDERS: Wonder[] = [
     blurb: "The State Hermitage in the Winter Palace, one of the largest art museums in the world.",
   },
   {
-    name: "National Intelligence Agency", category: "National", civ: "United States", status: "original",
-    location: { name: "Langley, VA", coords: [38.9517, -77.1467] },
-    blurb: "Echoes the real intelligence headquarters such as the CIA at Langley, Virginia.",
+    name: "National Intelligence Agency", category: "National", status: "original",
+    note: "A generic national spy agency — no single real-world site.",
+    blurb: "A wonder boosting espionage; an abstraction of a civilization's intelligence service, not a specific agency.",
   },
   {
-    name: "National Visitor Center", category: "National", civ: "United States", status: "original",
-    location: { name: "Washington, D.C.", coords: [38.8977, -77.0065] },
-    blurb: "The original National Visitor Center opened in Washington's Union Station for the 1976 Bicentennial.",
+    name: "National Visitor Center", category: "National", status: "original",
+    note: "A generic tourism centre — no single real-world site.",
+    blurb: "A wonder boosting tourism; an abstraction, despite coincidentally sharing a name with a 1970s D.C. facility.",
   },
   {
     name: "Oxford University", category: "National", civ: "United Kingdom", status: "original",
