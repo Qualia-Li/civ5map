@@ -446,20 +446,25 @@ const RAW_WONDERS: Wonder[] = [
   },
 ];
 
-// Sites the owner has personally visited: everything in these countries, plus a
-// handful of named extras elsewhere. A wonder only counts as visited if it has
-// a real-world `location` (so the orbital and virtual ones are never marked).
-const VISITED_COUNTRIES = new Set<string>([
-  "Italy", "Vatican City", "India", "China", "Canada", "United States",
-]);
-const VISITED_NAMES = new Set<string>([
-  "Machu Picchu", "Hagia Sophia", "Angkor Wat", "Pyramids",
-  "East India Company", "Neuschwanstein",
+// Wonders the owner has personally visited. The source of truth is this flat
+// list of names — it was originally gathered by country (everything in Italy,
+// India, China, Canada, and the USA) plus a handful of named extras, but those
+// rules are resolved here into explicit names so the data stands on its own.
+export const VISITED_WONDER_NAMES = new Set<string>([
+  // World
+  "Pyramids", "Great Wall", "Terracotta Army", "Angkor Wat", "Hagia Sophia",
+  "Machu Picchu", "Forbidden Palace", "Leaning Tower of Pisa", "Porcelain Tower",
+  "Red Fort", "Sistine Chapel", "Taj Mahal", "Uffizi", "Broadway",
+  "Neuschwanstein", "Statue of Liberty", "Pentagon", "CN Tower", "United Nations",
+  // National
+  "Circus Maximus", "East India Company", "National Intelligence Agency",
+  "National Visitor Center",
+  // Natural
+  "Fountain of Youth", "Mt. Kailash", "Mt. Fuji", "Old Faithful",
+  "The Barringer Crater", "The Grand Mesa",
 ]);
 
 export const WONDERS: Wonder[] = RAW_WONDERS.map((w) => ({
   ...w,
-  visited:
-    !!w.location &&
-    (VISITED_NAMES.has(w.name) || (!!w.civ && VISITED_COUNTRIES.has(w.civ))),
+  visited: VISITED_WONDER_NAMES.has(w.name),
 }));
