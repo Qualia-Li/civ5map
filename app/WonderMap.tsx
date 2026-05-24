@@ -48,6 +48,15 @@ const piePath = (r: number, frac: number): string => {
   return `M 0 0 L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z`;
 };
 
+// Stroke-only arc from angle a0 to a1 (radians) at radius r. Used to draw the
+// part-solid / part-dotted border that shows a city's share of "issue" wonders.
+const arcPath = (r: number, a0: number, a1: number): string => {
+  const x0 = r * Math.cos(a0), y0 = r * Math.sin(a0);
+  const x1 = r * Math.cos(a1), y1 = r * Math.sin(a1);
+  const large = a1 - a0 > Math.PI ? 1 : 0;
+  return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+};
+
 export default function WonderMap({ wonders, selected, onSelect, onClusterClick, focusKey }: Props) {
   const [proj, setProj] = useState<ProjName>("geoNaturalEarth1");
   const [center, setCenter] = useState<[number, number]>([10, 20]);
@@ -194,15 +203,6 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
     return m;
   }, [wonders]);
 
-  const handleClick = (w: Wonder, ev: React.MouseEvent) => {
-    const group = (w.location && cityGroups.get(w.location.name)) || [w];
-    if (group.length > 1 && onClusterClick) {
-      onClusterClick(group, { x: ev.clientX, y: ev.clientY }, w.location!.name);
-    } else {
-      onSelect(w);
-    }
-  };
-
   // Hemisphere visibility for the orthographic globe (see Map.tsx for the math).
   const isVisibleOnGlobe = (() => {
     if (!globeRotate) return () => true;
@@ -239,53 +239,14 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
         }
       </Geographies>
 
-      {/* Single-wonder cities: one marker each. Multi-wonder cities collapse
-          into the cluster markers rendered below. */}
-      {wonders.map((w) => {
-        if (!w.location) return null;                          // orbital / virtual — no marker
-        if ((cityGroups.get(w.location.name)?.length ?? 1) > 1) return null;
-        if (!isVisibleOnGlobe(w.location.coords)) return null; // back of the globe
-        const color = WONDER_CATEGORY_COLORS[w.category];
-        const isSel = selected?.name === w.name;
-        const r = (isSel ? 7 : 5) * k;
-        const HIT = 12 * k;
-        // A mapped wonder you still can't visit (mythical — may never have
-        // existed). Orbital/virtual ones have no location and aren't drawn.
-        const cantVisit = w.status === "mythical";
-        // Status ring: red = mythical (can't visit), yellow = altered from the
-        // original (reconstructed or ruined), none = still the original.
-        const statusRing =
-          w.status === "mythical" ? "#e03b3b" :
-          (w.status === "reconstructed" || w.status === "ruined") ? "#f5c518" : null;
-        // Dotted ring = an "issue" (mythical=red, reconstructed/ruined=yellow);
-        // the glyph fill carries visited; a dashed white ring marks selection.
-        const rings: { color: string; dotted?: boolean; dashed?: boolean }[] = [];
-        if (statusRing)  rings.push({ color: statusRing, dotted: true });
-        if (isSel)       rings.push({ color: "#ffffff", dashed: true });
-        const tip = `${w.name} — ${w.category} wonder · ${w.status}` +
-          (w.visited ? " · visited" : " · not visited") + (cantVisit ? " · can't be visited" : "");
-
-        return (
-          <Marker key={`${w.category}:${w.name}`} coordinates={toLngLat(w.location.coords)}
-            onClick={(ev: any) => handleClick(w, ev)}>
-            <circle r={HIT} fill="transparent" style={{ cursor: "pointer" }} />
-            <WonderGlyph color={color} r={r} k={k} visited={!!w.visited} />
-            {rings.map((ring, i) => (
-              <circle key={i} r={(r + 3.5 + i * 3) * k} fill="none" stroke={ring.color}
-                strokeWidth={(ring.dashed ? 1.2 : 1.6) * k} strokeOpacity={0.95}
-                strokeLinecap={ring.dotted ? "round" : undefined}
-                strokeDasharray={ring.dotted ? `${0.5 * k} ${2.2 * k}` : ring.dashed ? `${2 * k} ${2 * k}` : undefined}
-                style={{ pointerEvents: "none" }} />
-            ))}
-            <title>{tip}</title>
-          </Marker>
-        );
-      })}
-
-      {/* Multi-wonder cities: a single cluster marker (count inside), opening
-          the city list on click. Colored by the city's dominant category;
-          a white ring marks a city where every wonder is visited. */}
-      {[...cityGroups.entries()].filter(([, ws]) => ws.length > 1).map(([city, ws]) => {
+      {/* One marker per place (single wonder or whole city), three independent
+          channels:
+            color  = category (dominant)
+            fill   = share of the city's wonders you've visited  (pie wedge)
+            border = share that are "issues" (reconstructed/ruined/mythical):
+                     solid arc for originals, dotted arc for issues
+          Selection is a soft halo behind the glyph — never a border. */}
+      {[...cityGroups.entries()].map(([place, ws]) => {
         const lat = ws.reduce((s, w) => s + w.location!.coords[0], 0) / ws.length;
         const lng = ws.reduce((s, w) => s + w.location!.coords[1], 0) / ws.length;
         const coords: [number, number] = [lat, lng];
@@ -296,58 +257,67 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
         const dom = [...catCount.entries()].sort((a, b) => b[1] - a[1])[0][0];
         const color = WONDER_CATEGORY_COLORS[dom];
         const visitedCount = ws.filter((w) => w.visited).length;
+        const issueCount = ws.filter((w) => w.status !== "original").length;
         const visitedFrac = visitedCount / total;
-        const hasCantVisit = ws.some((w) => w.status === "mythical");
-        const hasAltered = ws.some((w) => w.status === "reconstructed" || w.status === "ruined");
+        const issueFrac = issueCount / total;
         const isSelHere = !!selected && ws.some((w) => w.name === selected.name);
-        const r = (6 + 2.2 * Math.sqrt(total)) * k;
+        const r = (3.5 + 2 * Math.sqrt(total)) * k;
+        const rFill = r - 2 * k;                  // inset so the border stays visible over fill
+        const HIT = r + 6 * k;
+        const SW = 1.8 * k;                       // constant border width
+        const dots = `${0.5 * k} ${2.2 * k}`;     // dotted = issue
+        const a0 = -Math.PI / 2;
+        const aSplit = a0 + (1 - issueFrac) * 2 * Math.PI; // solid → dotted boundary
+        const tip = total > 1
+          ? `${place} — ${total} wonders · ${visitedCount} visited${issueCount ? ` · ${issueCount} with issues` : ""}`
+          : `${ws[0].name} — ${ws[0].category} · ${ws[0].status}${ws[0].visited ? " · visited" : ""}`;
+
         return (
-          <Marker key={`city:${city}`} coordinates={toLngLat(coords)}
-            onClick={(ev: any) => onClusterClick && onClusterClick(ws, { x: ev.clientX, y: ev.clientY }, city)}>
-            <circle r={r + 6 * k} fill="transparent" style={{ cursor: "pointer", pointerEvents: "all" }} />
-            {/* Pie: the filled wedge is the share of the city's wonders visited. */}
-            <circle r={r} fill="#0e1620" stroke={color} strokeWidth={2 * k}
-              style={{ cursor: "pointer", pointerEvents: "all" }} />
+          <Marker key={`place:${place}`} coordinates={toLngLat(coords)}
+            onClick={(ev: any) => {
+              if (total > 1) onClusterClick?.(ws, { x: ev.clientX, y: ev.clientY }, place);
+              else onSelect(ws[0]);
+            }}>
+            <circle r={HIT} fill="transparent" style={{ cursor: "pointer", pointerEvents: "all" }} />
+
+            {/* Selection = a soft white glow/shadow (never an extra border). Every
+                shape below is centered on the marker origin, so shadow, fill,
+                border and number stay perfectly concentric. */}
+            <g style={isSelHere ? { filter: `drop-shadow(0 0 ${(4 * k).toFixed(2)}px #ffffff) drop-shadow(0 0 ${(2 * k).toFixed(2)}px #ffffff)` } : undefined}>
+            {/* fill = visited share (inset so the border ring stays visible) */}
             {visitedFrac >= 1 ? (
-              <circle r={r} fill={color} fillOpacity={0.95} style={{ pointerEvents: "none" }} />
+              <circle r={rFill} fill={color} fillOpacity={0.95} style={{ pointerEvents: "none" }} />
             ) : visitedFrac > 0 ? (
-              <path d={piePath(r, visitedFrac)} fill={color} fillOpacity={0.95} style={{ pointerEvents: "none" }} />
+              <path d={piePath(rFill, visitedFrac)} fill={color} fillOpacity={0.95} style={{ pointerEvents: "none" }} />
             ) : null}
-            {hasCantVisit ? (
-              <circle r={r + 3 * k} fill="none" stroke="#e03b3b" strokeWidth={1.6 * k}
-                strokeLinecap="round" strokeDasharray={`${0.5 * k} ${2.2 * k}`}
-                strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
-            ) : hasAltered ? (
-              <circle r={r + 3 * k} fill="none" stroke="#f5c518" strokeWidth={1.6 * k}
-                strokeLinecap="round" strokeDasharray={`${0.5 * k} ${2.2 * k}`}
-                strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
-            ) : null}
-            {isSelHere && (
-              <circle r={r + 6 * k} fill="none" stroke="#fff" strokeWidth={1.2 * k}
-                strokeDasharray={`${2 * k} ${2 * k}`} style={{ pointerEvents: "none" }} />
+
+            {/* border = issue share: solid arc (original) + dotted arc (issue) */}
+            {issueFrac <= 0 ? (
+              <circle r={r} fill="none" stroke={color} strokeWidth={SW} style={{ pointerEvents: "none" }} />
+            ) : issueFrac >= 1 ? (
+              <circle r={r} fill="none" stroke={color} strokeWidth={SW} strokeLinecap="round"
+                strokeDasharray={dots} style={{ pointerEvents: "none" }} />
+            ) : (
+              <>
+                <path d={arcPath(r, a0, aSplit)} fill="none" stroke={color} strokeWidth={SW}
+                  style={{ pointerEvents: "none" }} />
+                <path d={arcPath(r, aSplit, a0 + 2 * Math.PI)} fill="none" stroke={color} strokeWidth={SW}
+                  strokeLinecap="round" strokeDasharray={dots} style={{ pointerEvents: "none" }} />
+              </>
             )}
-            <text textAnchor="middle" dy="0.35em"
-              style={{ pointerEvents: "none", fill: "#fff", fontSize: 9.5 * k, fontWeight: 700,
-                       paintOrder: "stroke", stroke: "#0a1118", strokeWidth: 2.5 * k }}>
-              {total}
-            </text>
-            <title>{`${city} — ${total} wonders · ${visitedCount} visited`}</title>
+
+            {total > 1 && (
+              <text textAnchor="middle" dominantBaseline="central"
+                style={{ pointerEvents: "none", fill: "#fff", fontSize: r * 1.05, fontWeight: 700,
+                         paintOrder: "stroke", stroke: "#0a1118", strokeWidth: 1.4 * k }}>
+                {total}
+              </text>
+            )}
+            </g>
+            <title>{tip}</title>
           </Marker>
         );
       })}
     </>
-  );
-}
-
-// Fill encodes whether you've visited it: a filled disc if visited, an empty
-// (hollow) circle if not. Real-world status is shown by the ring color around
-// the glyph (yellow = reconstructed/ruined, red = mythical), not the fill.
-function WonderGlyph({ color, r, k, visited }: {
-  color: string; r: number; k: number; visited: boolean;
-}) {
-  const noPe = { pointerEvents: "none" as const };
-  return (
-    <circle r={r} fill={visited ? color : "transparent"} fillOpacity={visited ? 0.95 : 1}
-      stroke={color} strokeWidth={(visited ? 1 : 2) * k} style={noPe} />
   );
 }

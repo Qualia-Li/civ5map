@@ -267,10 +267,8 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
           <div style={{ height: 1, background: "var(--line)", margin: "6px 0" }} />
           <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", background: "#9aa9bc", display: "inline-block" }} /> Visited (filled)</div>
           <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid #9aa9bc", display: "inline-block" }} /> Not visited (empty)</div>
-          <div style={{ color: "var(--muted)", fontSize: 10.5, margin: "4px 0 2px" }}>Dotted ring = an issue:</div>
-          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px dotted #f5c518", display: "inline-block" }} /> Reconstructed or ruined</div>
-          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px dotted #e03b3b", display: "inline-block" }} /> Mythical — can&apos;t visit</div>
-          <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 4 }}>City clusters are a pie: filled share = wonders visited there.</div>
+          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px dotted #9aa9bc", display: "inline-block" }} /> Dotted border = an issue</div>
+          <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 4 }}>A city marker is a pie: filled share = visited, dotted share of the rim = wonders with issues. Open it for the specifics.</div>
           <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 2 }}>Orbital &amp; virtual wonders aren&apos;t mapped; the list shows them too.</div>
         </div>
       </main>
