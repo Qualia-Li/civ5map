@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { WONDERS, WONDER_CATEGORY_COLORS } from "../data/wonders";
 import type { Wonder, WonderCategory, WonderStatus, GameId } from "../data/wonders";
@@ -47,6 +47,12 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
       return true;
     });
   }, [activeCats, activeStatuses, activeGames, visitedOnly, search]);
+
+  // Drop the selection if the current filters hide it, so the detail pane and
+  // map focus never point at a wonder that isn't in the visible result set.
+  useEffect(() => {
+    if (selected && !filtered.some((w) => w.name === selected.name)) setSelected(null);
+  }, [filtered, selected]);
 
   const stats = useMemo(() => {
     const total = WONDERS.length;

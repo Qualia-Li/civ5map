@@ -250,11 +250,11 @@ function WonderGlyph({ status, color, r, k, selected }: {
     );
   }
   if (status === "ruined") {
-    return <circle r={r} fill="#0a1118" stroke={color} strokeWidth={2 * k} style={noPe} />;
+    return <circle r={r} fill="transparent" stroke={color} strokeWidth={2 * k} style={noPe} />;
   }
   // mythical
   return (
-    <circle r={r} fill="#0a1118" stroke={color} strokeWidth={2 * k}
+    <circle r={r} fill="transparent" stroke={color} strokeWidth={2 * k}
       strokeDasharray={`${2.2 * k} ${2 * k}`} style={noPe} />
   );
 }
