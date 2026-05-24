@@ -79,7 +79,7 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
     <div className="app">
       <aside className="sidebar">
         <ModeTabs mode={mode} setMode={setMode} />
-        <h1>Civ V <span>Wonders</span> Atlas</h1>
+        <h1>Civ V &amp; VI <span>Wonders</span> Atlas</h1>
         <div className="sub">
           {stats.total} wonders of Civilization V &amp; VI, pinned to the real places that inspired
           them. {stats.byCat.map((b) => `${b.n} ${b.c}`).join(" · ")}. {stats.visited} visited.
