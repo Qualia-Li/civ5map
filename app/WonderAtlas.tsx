@@ -265,12 +265,11 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
             </div>
           ))}
           <div style={{ height: 1, background: "var(--line)", margin: "6px 0" }} />
-          <div className="row"><span style={{ width: 10, height: 10, borderRadius: "50%", background: "#9aa9bc", display: "inline-block" }} /> Original (solid)</div>
-          <div className="row"><span style={{ width: 10, height: 10, borderRadius: "50%", border: "1.5px dashed #9aa9bc", display: "inline-block" }} /> Reconstructed</div>
-          <div className="row"><span style={{ width: 10, height: 10, borderRadius: "50%", border: "1.5px solid #9aa9bc", display: "inline-block" }} /> Ruined (hollow)</div>
-          <div className="row"><span style={{ width: 10, height: 10, borderRadius: "50%", border: "1.5px dotted #9aa9bc", display: "inline-block" }} /> Mythical</div>
+          <div style={{ color: "var(--muted)", fontSize: 10.5, marginBottom: 2 }}>Ring around the marker:</div>
+          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", background: "#9aa9bc", display: "inline-block" }} /> Original (no ring)</div>
+          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid #f5c518", display: "inline-block" }} /> Reconstructed or ruined</div>
+          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid #e03b3b", display: "inline-block" }} /> Mythical — can&apos;t visit</div>
           <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid #fff", display: "inline-block" }} /> Visited</div>
-          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid #e03b3b", display: "inline-block" }} /> Can&apos;t be visited (mythical)</div>
           <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 4 }}>Orbital &amp; virtual wonders aren&apos;t mapped; the list shows them too.</div>
         </div>
       </main>

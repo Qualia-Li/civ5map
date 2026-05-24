@@ -241,6 +241,16 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
         // A mapped wonder you still can't visit (mythical — may never have
         // existed). Orbital/virtual ones have no location and aren't drawn.
         const cantVisit = w.status === "mythical";
+        // Status ring: red = mythical (can't visit), yellow = altered from the
+        // original (reconstructed or ruined), none = still the original.
+        const statusRing =
+          w.status === "mythical" ? "#e03b3b" :
+          (w.status === "reconstructed" || w.status === "ruined") ? "#f5c518" : null;
+        // Stack rings outward from the glyph: status, then visited, then select.
+        const rings: { color: string; dashed?: boolean }[] = [];
+        if (statusRing)  rings.push({ color: statusRing });
+        if (w.visited)   rings.push({ color: "#ffffff" });
+        if (isSel)       rings.push({ color: "#ffffff", dashed: true });
         const tip = `${w.name} — ${w.category} wonder · ${w.status}` +
           (w.visited ? " · visited" : "") + (cantVisit ? " · can't be visited" : "");
 
@@ -249,20 +259,12 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
             onClick={(ev: any) => handleClick(w, ev)}>
             <circle r={HIT} fill="transparent" style={{ cursor: "pointer" }} />
             <WonderGlyph status={w.status} color={color} r={r} k={k} selected={isSel} />
-            {/* red ring = can't be visited (mythical) */}
-            {cantVisit && (
-              <circle r={r + 3.5 * k} fill="none" stroke="#e03b3b"
-                strokeWidth={1.5 * k} strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
-            )}
-            {/* visited ring */}
-            {w.visited && (
-              <circle r={r + 3.5 * k} fill="none" stroke="#ffffff"
-                strokeWidth={1.4 * k} strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
-            )}
-            {isSel && (
-              <circle r={r + 6 * k} fill="none" stroke="#fff" strokeWidth={1.2 * k}
-                strokeDasharray={`${2 * k} ${2 * k}`} style={{ pointerEvents: "none" }} />
-            )}
+            {rings.map((ring, i) => (
+              <circle key={i} r={(r + 3.5 + i * 3) * k} fill="none" stroke={ring.color}
+                strokeWidth={(ring.dashed ? 1.2 : 1.5) * k} strokeOpacity={0.95}
+                strokeDasharray={ring.dashed ? `${2 * k} ${2 * k}` : undefined}
+                style={{ pointerEvents: "none" }} />
+            ))}
             <title>{tip}</title>
           </Marker>
         );
@@ -283,6 +285,7 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
         const color = WONDER_CATEGORY_COLORS[dom];
         const allVisited = ws.every((w) => w.visited);
         const hasCantVisit = ws.some((w) => w.status === "mythical");
+        const hasAltered = ws.some((w) => w.status === "reconstructed" || w.status === "ruined");
         const isSelHere = !!selected && ws.some((w) => w.name === selected.name);
         const r = (6 + 2.2 * Math.sqrt(total)) * k;
         return (
@@ -294,10 +297,13 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
             {allVisited ? (
               <circle r={r + 3 * k} fill="none" stroke="#fff" strokeWidth={1.4 * k}
                 strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
-            ) : hasCantVisit && (
+            ) : hasCantVisit ? (
               <circle r={r + 3 * k} fill="none" stroke="#e03b3b" strokeWidth={1.5 * k}
                 strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
-            )}
+            ) : hasAltered ? (
+              <circle r={r + 3 * k} fill="none" stroke="#f5c518" strokeWidth={1.5 * k}
+                strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
+            ) : null}
             {isSelHere && (
               <circle r={r + 6 * k} fill="none" stroke="#fff" strokeWidth={1.2 * k}
                 strokeDasharray={`${2 * k} ${2 * k}`} style={{ pointerEvents: "none" }} />
