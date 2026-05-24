@@ -1,0 +1,426 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import { ALL_PEOPLE } from "../data";
+import type { Person, GPType, Era } from "../data/people-types";
+import { canonicalCity } from "../data/city-aliases";
+import ModeTabs, { type Mode } from "./ModeTabs";
+
+const WorldMap = dynamic(() => import("./Map"), { ssr: false });
+
+const TYPES: GPType[] = ["Scientist","Engineer","Merchant","Writer","Artist","Musician","General","Admiral","Prophet"];
+const ERAS: Era[] = ["Ancient","Classical","Medieval","Renaissance","Industrial","Modern"];
+
+const TYPE_COLORS: Record<GPType, string> = {
+  Scientist: "#5fbcd3", Engineer: "#f4a261", Merchant: "#e9c46a",
+  Artist: "#e76f51", Writer: "#b497d6", Musician: "#c49bf0",
+  General: "#d62828", Admiral: "#1d4ed8", Prophet: "#f9e79f",
+};
+
+// Spread onto a clickable div to make it keyboard-operable: Enter/Space fires the click.
+const clickable = (onActivate: (e: any) => void) => ({
+  role: "button" as const,
+  tabIndex: 0,
+  onClick: onActivate,
+  onKeyDown: (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onActivate(e);
+    }
+  },
+});
+
+function fmtYear(y?: number) {
+  if (y === undefined) return "?";
+  if (y < 0) return `${-y} BCE`;
+  return `${y}`; // CE implicit
+}
+
+function RankPanel({ title, rows, total, onPick }: {
+  title: string;
+  rows: { key: string; count: number; names: string[] }[];
+  total: number;
+  onPick: (names: string[]) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? rows : rows.slice(0, 8);
+  const max = rows[0]?.count ?? 1;
+  if (rows.length === 0) return null;
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div className="label" style={{ display: "flex", justifyContent: "space-between" }}>
+        <span>{title}</span>
+        <span style={{ textTransform: "none", letterSpacing: 0 }}>{rows.length} · {total} people</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 4 }}>
+        {visible.map((r, i) => (
+          <div key={r.key} onClick={() => onPick(r.names)}
+            style={{ position: "relative", padding: "4px 8px", borderRadius: 4, cursor: "pointer", fontSize: 12.5 }}
+            title={r.names.slice(0, 12).join(", ") + (r.names.length > 12 ? "…" : "")}>
+            <div style={{
+              position: "absolute", inset: 0, borderRadius: 4,
+              background: "var(--panel-2)",
+              width: `${(r.count / max) * 100}%`, opacity: 0.6,
+            }} />
+            <div style={{ position: "relative", display: "flex", justifyContent: "space-between" }}>
+              <span><span style={{ color: "var(--muted)", marginRight: 6 }}>{i + 1}.</span>{r.key}</span>
+              <span style={{ color: "var(--accent)", fontVariantNumeric: "tabular-nums" }}>{r.count}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      {rows.length > 8 && (
+        <button onClick={() => setExpanded(!expanded)}
+          style={{
+            marginTop: 4, fontSize: 11, background: "transparent", color: "var(--accent-2)",
+            border: "none", cursor: "pointer", padding: 4,
+          }}>
+          {expanded ? "Show top 8" : `Show all ${rows.length}`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default function PeopleAtlas({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
+  const [activeTypes, setActiveTypes] = useState<Set<GPType>>(new Set(TYPES));
+  const [activeEras, setActiveEras] = useState<Set<Era>>(new Set(ERAS));
+  const [civQuery, setCivQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Person | null>(null);
+  const [cluster, setCluster] = useState<{ people: Person[]; x: number; y: number; place: string } | null>(null);
+
+  const civs = useMemo(() => {
+    const s = new Set<string>();
+    ALL_PEOPLE.forEach((p) => s.add(p.civ));
+    return [...s].sort();
+  }, []);
+
+  // Normalize a "Italy/France" string into ["Italy","France"]; drop empties.
+  const splitMulti = (s: string) =>
+    s.split(/[\/,;]| and /).map((x) => x.trim()).filter(Boolean);
+
+  // Canonicalize a city name: strip parentheticals AND merge historical
+  // aliases (Constantinople→Istanbul, Jinling/Jianye→Nanjing, etc.).
+  const cleanCity = (s: string) => canonicalCity(s);
+
+  const filtered = useMemo(() => {
+    return ALL_PEOPLE.filter((p) => {
+      if (!activeTypes.has(p.type)) return false;
+      if (!activeEras.has(p.era)) return false;
+      if (civQuery && !p.civ.toLowerCase().includes(civQuery.toLowerCase())
+                   && !p.country.toLowerCase().includes(civQuery.toLowerCase())) return false;
+      if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    });
+  }, [activeTypes, activeEras, civQuery, search]);
+
+  // Rankings — respect the current filter set, by modern country and by city.
+  const rankings = useMemo(() => {
+    const country = new Map<string, Set<string>>();
+    const city    = new Map<string, Set<string>>();
+
+    for (const p of filtered) {
+      for (const c of splitMulti(p.country)) {
+        if (!country.has(c)) country.set(c, new Set());
+        country.get(c)!.add(p.name);
+      }
+      const seenCity = new Set<string>();
+      for (const place of [p.birth, p.work, p.death]) {
+        if (!place) continue;
+        const city0 = cleanCity(place.name);
+        // ignore "X (traditional)" duplicates and double-count of same person/city
+        if (seenCity.has(city0)) continue;
+        seenCity.add(city0);
+        if (!city.has(city0)) city.set(city0, new Set());
+        city.get(city0)!.add(p.name);
+      }
+    }
+
+    const toRanked = (m: Map<string, Set<string>>) =>
+      [...m.entries()]
+        .map(([k, v]) => ({ key: k, count: v.size, names: [...v] }))
+        .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key));
+
+    return { country: toRanked(country), city: toRanked(city) };
+  }, [filtered]);
+
+  // Label describing what's being ranked, given current filters
+  const rankLabel = useMemo(() => {
+    if (activeTypes.size === 1) return [...activeTypes][0] + "s";
+    if (activeTypes.size === TYPES.length) return "people";
+    return [...activeTypes].join(" / ");
+  }, [activeTypes]);
+
+  // Click a chip to isolate that single category. Click an already-solo
+  // chip again to restore the whole set. Shift-click toggles add/remove
+  // for users who want to compose a multi-select.
+  const isolate = <T,>(set: Set<T>, setter: (s: Set<T>) => void, all: T[], value: T, ev: React.MouseEvent) => {
+    if (ev.shiftKey) {
+      const next = new Set(set);
+      if (next.has(value)) next.delete(value); else next.add(value);
+      if (next.size === 0) setter(new Set(all));
+      else setter(next);
+      return;
+    }
+    const isSolo = set.size === 1 && set.has(value);
+    setter(isSolo ? new Set(all) : new Set([value]));
+  };
+
+  // Timeline (-2700 to 2025)
+  const T_MIN = -2700, T_MAX = 2025;
+  const tickYears = [-2500, -2000, -1500, -1000, -500, 0, 500, 1000, 1500, 2000];
+  const yearToPct = (y: number) => ((y - T_MIN) / (T_MAX - T_MIN)) * 100;
+
+  return (
+    <div className="app">
+      <aside className="sidebar">
+        <ModeTabs mode={mode} setMode={setMode} />
+        <h1>Civ V <span>Great People</span> Atlas</h1>
+        <div className="sub">{ALL_PEOPLE.length} historical figures from Civilization V's Great Person name pools — grouped by type, era, and civilization.</div>
+
+        {(activeTypes.size !== TYPES.length || activeEras.size !== ERAS.length || civQuery || search || selected) && (
+          <button
+            onClick={() => {
+              setActiveTypes(new Set(TYPES));
+              setActiveEras(new Set(ERAS));
+              setCivQuery("");
+              setSearch("");
+              setSelected(null);
+            }}
+            style={{
+              marginBottom: 14, padding: "6px 10px",
+              background: "transparent", border: "1px solid var(--accent)",
+              color: "var(--accent)", borderRadius: 6, cursor: "pointer",
+              fontSize: 12, width: "100%",
+            }}>
+            ↺ Reset filters &amp; selection
+          </button>
+        )}
+
+        <div className="filter-group">
+          <h3>Great Person Type</h3>
+          <div className="chip-row">
+            {TYPES.map((t) => (
+              <div key={t}
+                className={`chip type ${activeTypes.has(t) ? "active" : ""}`}
+                data-type={t}
+                aria-pressed={activeTypes.has(t)}
+                title="Click to isolate · shift-click to add/remove"
+                {...clickable((e) => isolate(activeTypes, setActiveTypes, TYPES, t, e))}>
+                {t}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-group">
+          <h3>Era</h3>
+          <div className="chip-row">
+            {ERAS.map((e) => (
+              <div key={e}
+                className={`chip ${activeEras.has(e) ? "active" : ""}`}
+                aria-pressed={activeEras.has(e)}
+                title="Click to isolate · shift-click to add/remove"
+                {...clickable((ev) => isolate(activeEras, setActiveEras, ERAS, e, ev))}>
+                {e}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-group">
+          <h3>Civilization / Country</h3>
+          <input className="search" placeholder="e.g. China, Greece, France..."
+            value={civQuery} onChange={(e) => setCivQuery(e.target.value)}
+            list="civ-list" />
+          <datalist id="civ-list">
+            {civs.map((c) => <option key={c} value={c} />)}
+          </datalist>
+        </div>
+
+        <div className="filter-group">
+          <h3>Search by Name</h3>
+          <input className="search" placeholder="Newton, Tesla, Sun Tzu..."
+            value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
+
+        <div className="results">
+          <div className="count">{filtered.length} matching</div>
+          {filtered.slice(0, 200).map((p) => (
+            <div key={`${p.type}:${p.name}`}
+              className={`result ${selected?.name === p.name ? "selected" : ""}`}
+              aria-label={`Show details for ${p.name}`}
+              {...clickable(() => setSelected(p))}>
+              <div className="dot" style={{ background: TYPE_COLORS[p.type] }} />
+              <div>{p.name} <span style={{ color: "var(--muted)", fontSize: 11 }}>· {p.civ}</span></div>
+              <div className="yr">{fmtYear(p.born)}</div>
+            </div>
+          ))}
+          {filtered.length > 200 && (
+            <div className="count">… and {filtered.length - 200} more — refine filters.</div>
+          )}
+        </div>
+      </aside>
+
+      <main className="map-wrap">
+        <WorldMap people={filtered} selected={selected}
+          onSelect={(p) => { setSelected(p); setCluster(null); }}
+          onClusterClick={(people, anchor, place) =>
+            setCluster({ people, x: anchor.x, y: anchor.y, place })} />
+
+        {cluster && (() => {
+          // Clamp the popup against all four viewport edges. The popup never
+          // renders off-screen even on tiny viewports — its position is capped
+          // to [8, viewport - size - 8] after considering the flip-to-the-other-
+          // side preference for cursors near the right/bottom edge.
+          const vw = typeof window !== "undefined" ? window.innerWidth  : 1600;
+          const vh = typeof window !== "undefined" ? window.innerHeight : 900;
+          // Cap popup size to (viewport - 16) so it always fits, then position.
+          const W = Math.min(340, vw - 16);
+          const H = Math.min(420, vh - 16, 60 + 30 * cluster.people.length);
+          const preferLeft = cluster.x + 8 + W > vw ? cluster.x - W - 8 : cluster.x + 8;
+          const preferTop  = cluster.y + 8 + H > vh ? cluster.y - H - 8 : cluster.y + 8;
+          const left = Math.max(8, Math.min(preferLeft, vw - W - 8));
+          const top  = Math.max(8, Math.min(preferTop,  vh - H - 8));
+          return (
+          <div
+            role="dialog" aria-label={`People at ${cluster.place}`}
+            style={{
+              position: "fixed", left, top,
+              zIndex: 50, width: W, maxHeight: H, overflowY: "auto",
+              background: "rgba(15,20,25,0.97)", border: "1px solid #324155",
+              borderRadius: 8, padding: "8px 10px", boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
+              fontSize: 13,
+            }}
+            onMouseLeave={() => setCluster(null)}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+              <span style={{ color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.08 + "em" }}>
+                {cluster.people.length} at {canonicalCity(cluster.place)}
+              </span>
+              <span aria-label="Close" style={{ cursor: "pointer", color: "var(--muted)", fontSize: 11 }}
+                {...clickable(() => setCluster(null))}>close ×</span>
+            </div>
+            {cluster.people.map((p) => (
+              <div key={`${p.type}:${p.name}`}
+                aria-label={`Select ${p.name}`}
+                {...clickable(() => { setSelected(p); setCluster(null); })}
+                style={{ padding: "5px 6px", borderRadius: 4, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 8,
+                  background: selected?.name === p.name ? "var(--panel-2)" : "transparent" }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%",
+                  background: TYPE_COLORS[p.type], flexShrink: 0 }} />
+                <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap",
+                  overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</span>
+                <span style={{ color: "var(--muted)", fontSize: 11,
+                  whiteSpace: "nowrap", flexShrink: 0,
+                  fontVariantNumeric: "tabular-nums" }}>
+                  {fmtYear(p.born)} · {p.type}
+                </span>
+              </div>
+            ))}
+          </div>
+          );
+        })()}
+
+        <div className="legend">
+          <div>Markers — colored by Great Person type</div>
+          <div className="row"><span className="ring" /> Born (ring)</div>
+          <div className="row"><span className="ring filled" /> Worked / lived (filled)</div>
+          <div className="row"><span className="ring" style={{ background: "#0a1118" }} /> Died (dark center)</div>
+        </div>
+
+        <div className="timeline">
+          <div>Timeline · {filtered.length} people · birth year</div>
+          <div className="timeline-track">
+            <div className="timeline-axis" />
+            {tickYears.map((y) => (
+              <div key={y} className="timeline-tick" style={{ left: `${yearToPct(y)}%` }}>
+                <div className="bar" />
+                <div className="lbl">{y < 0 ? `${-y} BCE` : y}</div>
+              </div>
+            ))}
+            {filtered.filter(p => p.born !== undefined).map((p) => (
+              <div key={`tl-${p.type}:${p.name}`}
+                className="timeline-marker"
+                title={`${p.name} (${fmtYear(p.born)})`}
+                style={{ left: `${yearToPct(p.born!)}%`, background: TYPE_COLORS[p.type],
+                         outline: selected?.name === p.name ? "2px solid #fff" : undefined }}
+                onClick={() => setSelected(p)} />
+            ))}
+          </div>
+        </div>
+      </main>
+
+      <aside className="detail">
+        {!selected && (
+          <div className="empty" style={{ marginBottom: 12 }}>Click a marker, list row, or timeline dot to see details.</div>
+        )}
+        {selected && (
+          <>
+            <h2>{selected.name}</h2>
+            <div className="meta">
+              <span style={{ color: TYPE_COLORS[selected.type] }}>{selected.type}</span>
+              {" · "}{selected.civ}
+              {" · "}{selected.era}
+              {" · "}{fmtYear(selected.born)} – {fmtYear(selected.died)}
+            </div>
+            <div className="blurb">{selected.blurb}</div>
+
+            <div className="label">Born</div>
+            {selected.birth ? (
+              <div className="place-row">
+                <span className="dot" style={{ background: TYPE_COLORS[selected.type], border: "2px solid #fff" }} />
+                <span>{canonicalCity(selected.birth.name)}</span>
+              </div>
+            ) : <div className="place-row" style={{ color: "var(--muted)" }}>—</div>}
+
+            <div className="label" style={{ marginTop: 8 }}>Worked</div>
+            {selected.work ? (
+              <div className="place-row">
+                <span className="dot" style={{ background: TYPE_COLORS[selected.type] }} />
+                <span>{canonicalCity(selected.work.name)}</span>
+              </div>
+            ) : <div className="place-row" style={{ color: "var(--muted)" }}>—</div>}
+
+            <div className="label" style={{ marginTop: 8 }}>Died</div>
+            {selected.death ? (
+              <div className="place-row">
+                <span className="dot" style={{ background: "#111", border: `2px solid ${TYPE_COLORS[selected.type]}` }} />
+                <span>{canonicalCity(selected.death.name)}</span>
+              </div>
+            ) : <div className="place-row" style={{ color: "var(--muted)" }}>—</div>}
+
+            <div className="label" style={{ marginTop: 16 }}>Notable Works / Products</div>
+            <ul className="works">
+              {selected.works.map((w, i) => <li key={i}>{w}</li>)}
+            </ul>
+          </>
+        )}
+
+        <div style={{ height: 1, background: "var(--line)", margin: "18px 0" }} />
+
+        <RankPanel
+          title={`Top countries by ${rankLabel}`}
+          rows={rankings.country}
+          total={filtered.length}
+          onPick={(names) => {
+            const first = filtered.find((p) => names.includes(p.name));
+            if (first) setSelected(first);
+          }}
+        />
+        <RankPanel
+          title={`Top cities by ${rankLabel}`}
+          rows={rankings.city}
+          total={filtered.length}
+          onPick={(names) => {
+            const first = filtered.find((p) => names.includes(p.name));
+            if (first) setSelected(first);
+          }}
+        />
+      </aside>
+    </div>
+  );
+}
