@@ -18,6 +18,12 @@ const STATUS_LABEL: Record<WonderStatus, string> = {
 const GAME_LABEL: Record<GameId, string> = { V: "Civ V", VI: "Civ VI" };
 const gamesLabel = (g?: GameId[]) => (g ?? []).map((x) => GAME_LABEL[x]).join(" & ");
 
+// A wonder you can't actually go and stand at: orbital/virtual ones (no real
+// location) and mythical ones that may never have existed.
+const cannotVisit = (w: Wonder) => !w.location || w.status === "mythical";
+const cannotVisitReason = (w: Wonder) =>
+  w.note ?? (w.status === "mythical" ? "Mythical — may never have existed." : "");
+
 const clickable = (onActivate: (e: any) => void) => ({
   role: "button" as const,
   tabIndex: 0,
@@ -34,6 +40,13 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
   const [visitedOnly, setVisitedOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Wonder | null>(null);
+  const [focusNonce, setFocusNonce] = useState(0);
+  const [cluster, setCluster] = useState<{ wonders: Wonder[]; x: number; y: number; place: string } | null>(null);
+
+  // Pick from the list → select AND fly the map to it. Map clicks select
+  // without moving the camera (see WonderMap), so this is the only fly path.
+  const pickAndFocus = (w: Wonder) => { setSelected(w); setCluster(null); setFocusNonce((n) => n + 1); };
+  const pickNoFocus = (w: Wonder) => { setSelected(w); setCluster(null); };
 
   const filtered = useMemo(() => {
     return WONDERS.filter((w) => {
@@ -94,6 +107,7 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
               setVisitedOnly(false);
               setSearch("");
               setSelected(null);
+              setCluster(null);
             }}
             style={{
               marginBottom: 14, padding: "6px 10px",
@@ -176,21 +190,71 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
             <div key={`${w.category}:${w.name}`}
               className={`result ${selected?.name === w.name ? "selected" : ""}`}
               aria-label={`Show details for ${w.name}`}
-              {...clickable(() => setSelected(w))}>
+              {...clickable(() => pickAndFocus(w))}>
               <div className="dot" style={{ background: WONDER_CATEGORY_COLORS[w.category] }} />
               <div>{w.name}{" "}
                 <span style={{ color: "var(--muted)", fontSize: 11 }}>
-                  · {w.location?.name ?? w.civ ?? w.status} · {gamesLabel(w.games)}
+                  · {w.location?.name ?? "not mapped"} · {gamesLabel(w.games)}
                 </span>
               </div>
-              <div className="yr">{w.visited ? "✓" : ""}</div>
+              <div className="yr" title={w.visited ? "Visited" : cannotVisit(w) ? "Can't be visited" : undefined}>
+                {w.visited ? "✓" : cannotVisit(w) ? "⊘" : ""}
+              </div>
             </div>
           ))}
         </div>
       </aside>
 
       <main className="map-wrap">
-        <WonderMap wonders={filtered} selected={selected} onSelect={setSelected} />
+        <WonderMap wonders={filtered} selected={selected} onSelect={pickNoFocus}
+          onClusterClick={(wonders, anchor, place) =>
+            setCluster({ wonders, x: anchor.x, y: anchor.y, place })}
+          focusKey={focusNonce} />
+
+        {cluster && (() => {
+          const vw = typeof window !== "undefined" ? window.innerWidth  : 1600;
+          const vh = typeof window !== "undefined" ? window.innerHeight : 900;
+          const W = Math.min(320, vw - 16);
+          const H = Math.min(420, vh - 16, 56 + 30 * cluster.wonders.length);
+          const preferLeft = cluster.x + 8 + W > vw ? cluster.x - W - 8 : cluster.x + 8;
+          const preferTop  = cluster.y + 8 + H > vh ? cluster.y - H - 8 : cluster.y + 8;
+          const left = Math.max(8, Math.min(preferLeft, vw - W - 8));
+          const top  = Math.max(8, Math.min(preferTop,  vh - H - 8));
+          return (
+            <div role="dialog" aria-label={`Wonders at ${cluster.place}`}
+              onMouseLeave={() => setCluster(null)}
+              style={{
+                position: "fixed", left, top, zIndex: 50, width: W, maxHeight: H, overflowY: "auto",
+                background: "rgba(15,20,25,0.97)", border: "1px solid #324155",
+                borderRadius: 8, padding: "8px 10px", boxShadow: "0 6px 20px rgba(0,0,0,0.5)", fontSize: 13,
+              }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                <span style={{ color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  {cluster.wonders.length} at {cluster.place}
+                </span>
+                <span aria-label="Close" style={{ cursor: "pointer", color: "var(--muted)", fontSize: 11 }}
+                  {...clickable(() => setCluster(null))}>close ×</span>
+              </div>
+              {cluster.wonders.map((w) => (
+                <div key={`${w.category}:${w.name}`}
+                  aria-label={`Select ${w.name}`}
+                  {...clickable(() => pickNoFocus(w))}
+                  style={{ padding: "5px 6px", borderRadius: 4, cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 8,
+                    background: selected?.name === w.name ? "var(--panel-2)" : "transparent" }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%",
+                    background: WONDER_CATEGORY_COLORS[w.category], flexShrink: 0 }} />
+                  <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {w.name}{w.visited ? " ✓" : ""}
+                  </span>
+                  <span style={{ color: "var(--muted)", fontSize: 11, whiteSpace: "nowrap", flexShrink: 0 }}>
+                    {STATUS_LABEL[w.status]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
 
         <div className="legend">
           <div>Markers — colored by category</div>
@@ -206,7 +270,8 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
           <div className="row"><span style={{ width: 10, height: 10, borderRadius: "50%", border: "1.5px solid #9aa9bc", display: "inline-block" }} /> Ruined (hollow)</div>
           <div className="row"><span style={{ width: 10, height: 10, borderRadius: "50%", border: "1.5px dotted #9aa9bc", display: "inline-block" }} /> Mythical</div>
           <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid #fff", display: "inline-block" }} /> Visited</div>
-          <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 4 }}>Orbital &amp; virtual wonders aren&apos;t mapped.</div>
+          <div className="row"><span style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid #e03b3b", display: "inline-block" }} /> Can&apos;t be visited (mythical)</div>
+          <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 4 }}>Orbital &amp; virtual wonders aren&apos;t mapped; the list shows them too.</div>
         </div>
       </main>
 
@@ -229,6 +294,12 @@ export default function WonderAtlas({ mode, setMode }: { mode: Mode; setMode: (m
                 display: "inline-block", marginBottom: 12, padding: "2px 10px", borderRadius: 999,
                 background: "rgba(255,255,255,0.08)", border: "1px solid #fff", color: "#fff", fontSize: 12,
               }}>✓ Visited</div>
+            )}
+            {!selected.visited && cannotVisit(selected) && (
+              <div title={cannotVisitReason(selected)} style={{
+                display: "inline-block", marginBottom: 12, padding: "2px 10px", borderRadius: 999,
+                background: "rgba(154,169,188,0.1)", border: "1px solid var(--muted)", color: "var(--muted)", fontSize: 12,
+              }}>⊘ Can&apos;t be visited</div>
             )}
             <div className="blurb">{selected.blurb}</div>
 

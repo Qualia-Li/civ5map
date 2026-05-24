@@ -28,12 +28,16 @@ interface Props {
   wonders: Wonder[];
   selected: Wonder | null;
   onSelect: (w: Wonder) => void;
+  /** Click on a city shared by >1 wonder (Paris, New York, London, …). */
+  onClusterClick?: (wonders: Wonder[], anchor: { x: number; y: number }, placeLabel: string) => void;
+  /** Bumped by the parent when a list pick should fly the map to `selected`. */
+  focusKey: number;
 }
 
 // our data is [lat, lng]; react-simple-maps expects [lng, lat]
 const toLngLat = (c: [number, number]): [number, number] => [c[1], c[0]];
 
-export default function WonderMap({ wonders, selected, onSelect }: Props) {
+export default function WonderMap({ wonders, selected, onSelect, onClusterClick, focusKey }: Props) {
   const [proj, setProj] = useState<ProjName>("geoNaturalEarth1");
   const [center, setCenter] = useState<[number, number]>([10, 20]);
   const [zoom, setZoom] = useState(1);
@@ -56,17 +60,22 @@ export default function WonderMap({ wonders, selected, onSelect }: Props) {
     return () => el.removeEventListener("wheel", onWheel);
   }, [proj]);
 
-  // Focus the selected wonder's location.
+  // Fly to the selected wonder ONLY when the parent bumps focusKey (i.e. the
+  // user picked it from the list). Clicking a marker on the map selects without
+  // moving the camera, so zooming in and clicking around no longer snaps back.
   useEffect(() => {
+    if (focusKey === 0) return; // initial mount — don't move
     if (!selected?.location) return;
     const [lng, lat] = toLngLat(selected.location.coords);
     if (proj === "geoOrthographic") {
       setRotate([-lng, -lat, 0]);
     } else {
       setCenter([lng, lat]);
-      setZoom(4);
+      setZoom((z) => Math.max(z, 4)); // zoom in to at least 4, never out
     }
-  }, [selected, proj]);
+    // selected/proj intentionally omitted — only a focusKey bump should refocus
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusKey]);
 
   const projectionConfig: any =
     proj === "geoOrthographic" ? { rotate, scale: globeScale } :
@@ -126,7 +135,7 @@ export default function WonderMap({ wonders, selected, onSelect }: Props) {
 
         {proj === "geoOrthographic" ? (
           <WonderContents wonders={wonders} selected={selected} onSelect={onSelect}
-            zoom={1} globeRotate={rotate} />
+            onClusterClick={onClusterClick} focusKey={focusKey} zoom={1} globeRotate={rotate} />
         ) : (
           <ZoomableGroup
             center={center}
@@ -139,7 +148,8 @@ export default function WonderMap({ wonders, selected, onSelect }: Props) {
             maxZoom={64}
             translateExtent={[[-200, -200], [1400, 900]]}
           >
-            <WonderContents wonders={wonders} selected={selected} onSelect={onSelect} zoom={zoom} />
+            <WonderContents wonders={wonders} selected={selected} onSelect={onSelect}
+              onClusterClick={onClusterClick} focusKey={focusKey} zoom={zoom} />
           </ZoomableGroup>
         )}
       </ComposableMap>
@@ -155,10 +165,32 @@ export default function WonderMap({ wonders, selected, onSelect }: Props) {
   );
 }
 
-function WonderContents({ wonders, selected, onSelect, zoom, globeRotate }:
+function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, globeRotate }:
     Props & { zoom: number; globeRotate?: [number, number, number] }) {
   // Counter-scale so markers stay screen-sized as the map zooms in.
   const k = 1 / Math.max(0.5, zoom);
+
+  // Group wonders by their place label so clicking any marker in a city that
+  // holds several (Paris, New York, London, Moscow, Rome…) opens the whole set.
+  const cityGroups = React.useMemo(() => {
+    const m = new globalThis.Map<string, Wonder[]>();
+    for (const w of wonders) {
+      if (!w.location) continue;
+      const key = w.location.name;
+      if (!m.has(key)) m.set(key, []);
+      m.get(key)!.push(w);
+    }
+    return m;
+  }, [wonders]);
+
+  const handleClick = (w: Wonder, ev: React.MouseEvent) => {
+    const group = (w.location && cityGroups.get(w.location.name)) || [w];
+    if (group.length > 1 && onClusterClick) {
+      onClusterClick(group, { x: ev.clientX, y: ev.clientY }, w.location!.name);
+    } else {
+      onSelect(w);
+    }
+  };
 
   // Hemisphere visibility for the orthographic globe (see Map.tsx for the math).
   const isVisibleOnGlobe = (() => {
@@ -203,14 +235,22 @@ function WonderContents({ wonders, selected, onSelect, zoom, globeRotate }:
         const isSel = selected?.name === w.name;
         const r = (isSel ? 7 : 5) * k;
         const HIT = 12 * k;
+        // A mapped wonder you still can't visit (mythical — may never have
+        // existed). Orbital/virtual ones have no location and aren't drawn.
+        const cantVisit = w.status === "mythical";
         const tip = `${w.name} — ${w.category} wonder · ${w.status}` +
-          (w.visited ? " · visited" : "");
+          (w.visited ? " · visited" : "") + (cantVisit ? " · can't be visited" : "");
 
         return (
           <Marker key={`${w.category}:${w.name}`} coordinates={toLngLat(w.location.coords)}
-            onClick={() => onSelect(w)}>
+            onClick={(ev: any) => handleClick(w, ev)}>
             <circle r={HIT} fill="transparent" style={{ cursor: "pointer" }} />
             <WonderGlyph status={w.status} color={color} r={r} k={k} selected={isSel} />
+            {/* red ring = can't be visited (mythical) */}
+            {cantVisit && (
+              <circle r={r + 3.5 * k} fill="none" stroke="#e03b3b"
+                strokeWidth={1.5 * k} strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
+            )}
             {/* visited ring */}
             {w.visited && (
               <circle r={r + 3.5 * k} fill="none" stroke="#ffffff"
