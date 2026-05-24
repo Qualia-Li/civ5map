@@ -19,7 +19,7 @@
 
 import type { Place } from "./people-types";
 
-export type WonderCategory = "World" | "National" | "Natural";
+export type WonderCategory = "World" | "National" | "Natural" | "Unused";
 
 export type WonderStatus = "original" | "ruined" | "reconstructed" | "mythical";
 
@@ -43,6 +43,7 @@ export const WONDER_CATEGORY_COLORS: Record<WonderCategory, string> = {
   World:    "#d4a85a", // gold
   National: "#5fbcd3", // teal
   Natural:  "#5fae6a", // green
+  Unused:   "#8a8f9c", // slate — cut from the game
 };
 
 const RAW_WONDERS: Wonder[] = [
@@ -443,6 +444,30 @@ const RAW_WONDERS: Wonder[] = [
     name: "Uluru", category: "Natural", civ: "Australia", status: "original",
     location: { name: "Uluru", coords: [-25.3444, 131.0369] },
     blurb: "The great sandstone monolith sacred to the Anangu, rising from the central Australian desert.",
+  },
+
+  // ──────────────────────── Unused Wonders ─────────────────────────
+  // Cut from the final game — only paintings, icons, or music survive in the
+  // files. Each is still pinned to the real place it would have represented.
+  {
+    name: "Panama Canal", category: "Unused", era: "Modern", civ: "Panama", status: "original",
+    location: { name: "Panama Canal", coords: [9.0800, -79.6800] },
+    blurb: "Cut world wonder; its loading-screen painting survives. The real ship canal opened in 1914.",
+  },
+  {
+    name: "Three Gorges Dam", category: "Unused", era: "Information", civ: "China", status: "original",
+    location: { name: "Yichang", coords: [30.8230, 111.0030] },
+    blurb: "Cut wonder — likely too tile-dependent to place. The real Yangtze dam is the world's largest power station.",
+  },
+  {
+    name: "Large Hadron Collider", category: "Unused", era: "Information", civ: "Switzerland", status: "original",
+    location: { name: "CERN, Geneva", coords: [46.2340, 6.0550] },
+    blurb: "Cut wonder; a placeholder image and music file remain. The real 27-km collider straddles the France–Swiss border.",
+  },
+  {
+    name: "Motherland Calls", category: "Unused", era: "Atomic", civ: "Russia", status: "original",
+    location: { name: "Volgograd", coords: [48.7420, 44.5370] },
+    blurb: "Cut from Brave New World over copyright; the colossal Volgograd war statue it depicts still stands.",
   },
 ];
 

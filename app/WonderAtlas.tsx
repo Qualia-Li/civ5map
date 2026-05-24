@@ -8,7 +8,7 @@ import ModeTabs, { type Mode } from "./ModeTabs";
 
 const WonderMap = dynamic(() => import("./WonderMap"), { ssr: false });
 
-const CATEGORIES: WonderCategory[] = ["World", "National", "Natural"];
+const CATEGORIES: WonderCategory[] = ["World", "National", "Natural", "Unused"];
 const STATUSES: WonderStatus[] = ["original", "reconstructed", "ruined", "mythical"];
 
 const STATUS_LABEL: Record<WonderStatus, string> = {
