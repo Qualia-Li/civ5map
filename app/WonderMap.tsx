@@ -228,8 +228,11 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
         }
       </Geographies>
 
+      {/* Single-wonder cities: one marker each. Multi-wonder cities collapse
+          into the cluster markers rendered below. */}
       {wonders.map((w) => {
         if (!w.location) return null;                          // orbital / virtual — no marker
+        if ((cityGroups.get(w.location.name)?.length ?? 1) > 1) return null;
         if (!isVisibleOnGlobe(w.location.coords)) return null; // back of the globe
         const color = WONDER_CATEGORY_COLORS[w.category];
         const isSel = selected?.name === w.name;
@@ -261,6 +264,49 @@ function WonderContents({ wonders, selected, onSelect, onClusterClick, zoom, glo
                 strokeDasharray={`${2 * k} ${2 * k}`} style={{ pointerEvents: "none" }} />
             )}
             <title>{tip}</title>
+          </Marker>
+        );
+      })}
+
+      {/* Multi-wonder cities: a single cluster marker (count inside), opening
+          the city list on click. Colored by the city's dominant category;
+          a white ring marks a city where every wonder is visited. */}
+      {[...cityGroups.entries()].filter(([, ws]) => ws.length > 1).map(([city, ws]) => {
+        const lat = ws.reduce((s, w) => s + w.location!.coords[0], 0) / ws.length;
+        const lng = ws.reduce((s, w) => s + w.location!.coords[1], 0) / ws.length;
+        const coords: [number, number] = [lat, lng];
+        if (!isVisibleOnGlobe(coords)) return null;
+        const total = ws.length;
+        const catCount = new globalThis.Map<WonderCategory, number>();
+        for (const w of ws) catCount.set(w.category, (catCount.get(w.category) ?? 0) + 1);
+        const dom = [...catCount.entries()].sort((a, b) => b[1] - a[1])[0][0];
+        const color = WONDER_CATEGORY_COLORS[dom];
+        const allVisited = ws.every((w) => w.visited);
+        const hasCantVisit = ws.some((w) => w.status === "mythical");
+        const isSelHere = !!selected && ws.some((w) => w.name === selected.name);
+        const r = (6 + 2.2 * Math.sqrt(total)) * k;
+        return (
+          <Marker key={`city:${city}`} coordinates={toLngLat(coords)}
+            onClick={(ev: any) => onClusterClick && onClusterClick(ws, { x: ev.clientX, y: ev.clientY }, city)}>
+            <circle r={r + 6 * k} fill="transparent" style={{ cursor: "pointer", pointerEvents: "all" }} />
+            <circle r={r} fill={color} fillOpacity={0.92} stroke="#0a1118" strokeWidth={1 * k}
+              style={{ cursor: "pointer", pointerEvents: "all" }} />
+            {allVisited ? (
+              <circle r={r + 3 * k} fill="none" stroke="#fff" strokeWidth={1.4 * k}
+                strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
+            ) : hasCantVisit && (
+              <circle r={r + 3 * k} fill="none" stroke="#e03b3b" strokeWidth={1.5 * k}
+                strokeOpacity={0.95} style={{ pointerEvents: "none" }} />
+            )}
+            {isSelHere && (
+              <circle r={r + 6 * k} fill="none" stroke="#fff" strokeWidth={1.2 * k}
+                strokeDasharray={`${2 * k} ${2 * k}`} style={{ pointerEvents: "none" }} />
+            )}
+            <text textAnchor="middle" dy="0.35em"
+              style={{ pointerEvents: "none", fill: "#11161d", fontSize: 9.5 * k, fontWeight: 700 }}>
+              {total}
+            </text>
+            <title>{`${city} — ${total} wonders${allVisited ? " · all visited" : ""}`}</title>
           </Marker>
         );
       })}
