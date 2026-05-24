@@ -327,14 +327,14 @@ const RAW_WONDERS: Wonder[] = [
     blurb: "The oldest university in the English-speaking world, teaching since at least 1096.",
   },
   {
-    name: "Grand Temple", category: "National", status: "original",
-    note: "A generic religious capital — no single real-world building inspired it.",
-    blurb: "The seat of a civilization's faith in its Holy City; an abstraction rather than a real temple.",
+    name: "Grand Temple", category: "National", civ: "Israel", status: "ruined",
+    location: { name: "Jerusalem", coords: [31.7780, 35.2354] },
+    blurb: "The great temple of a civilization's faith — pinned to the Temple Mount in Jerusalem, site of the Temple.",
   },
   {
-    name: "Heroic Epic", category: "National", status: "mythical",
-    note: "An abstract martial monument — no real-world site.",
-    blurb: "A national war memorial that hardens new troops; represents a culture's heroic literature.",
+    name: "Heroic Epic", category: "National", civ: "United States", status: "original",
+    location: { name: "Washington, D.C.", coords: [38.8895, -77.0501] },
+    blurb: "A national war memorial honoring a civilization's heroes — pinned to the memorials of Washington, D.C.",
   },
   {
     name: "Ironworks", category: "National", status: "original",
@@ -347,9 +347,9 @@ const RAW_WONDERS: Wonder[] = [
     blurb: "A nationwide academy boosting research; an abstraction of a country's higher-education system.",
   },
   {
-    name: "National Epic", category: "National", status: "mythical",
-    note: "An abstract cultural monument — no real-world site.",
-    blurb: "A wonder celebrating a civilization's defining poem or saga; purely representational.",
+    name: "National Epic", category: "National", civ: "France", status: "original",
+    location: { name: "Paris", coords: [48.8738, 2.2950] },
+    blurb: "A monument to a civilization's defining saga — pinned to the Arc de Triomphe in Paris.",
   },
   {
     name: "National Treasury", category: "National", status: "original",
@@ -616,8 +616,8 @@ export const VISITED_WONDER_NAMES = new Set<string>([
   "Red Fort", "Sistine Chapel", "Taj Mahal", "Uffizi", "Broadway",
   "Neuschwanstein", "Statue of Liberty", "Pentagon", "CN Tower", "United Nations",
   "Temple of Artemis", "Colosseum", "Sydney Opera House",
-  // National — only the two actually visited
-  "Circus Maximus", "East India Company",
+  // National
+  "Circus Maximus", "East India Company", "Heroic Epic",
   // Natural — only Mt. Fuji
   "Mt. Fuji",
   // Civ VI additions
