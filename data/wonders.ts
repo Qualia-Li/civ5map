@@ -618,9 +618,8 @@ export const VISITED_WONDER_NAMES = new Set<string>([
   // National
   "Circus Maximus", "East India Company", "National Intelligence Agency",
   "National Visitor Center",
-  // Natural
-  "Fountain of Youth", "Mt. Kailash", "Mt. Fuji", "Old Faithful",
-  "The Barringer Crater", "The Grand Mesa",
+  // Natural — only Mt. Fuji
+  "Mt. Fuji",
   // Civ VI additions
   "Biosphère", "Golden Gate Bridge", "Országház",
 ]);
