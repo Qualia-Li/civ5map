@@ -327,9 +327,9 @@ const RAW_WONDERS: Wonder[] = [
     blurb: "The oldest university in the English-speaking world, teaching since at least 1096.",
   },
   {
-    name: "Grand Temple", category: "National", civ: "Israel", status: "ruined",
-    location: { name: "Jerusalem", coords: [31.7780, 35.2354] },
-    blurb: "The great temple of a civilization's faith — pinned to the Temple Mount in Jerusalem, site of the Temple.",
+    name: "Grand Temple", category: "National", status: "original",
+    note: "A generic faith building; its in-game art is a stylized Orthodox cathedral, not one identifiable real wonder.",
+    blurb: "The faith centre of a civilization's Holy City — a generic religious building, not a specific real temple.",
   },
   {
     name: "Heroic Epic", category: "National", civ: "United States", status: "original",
